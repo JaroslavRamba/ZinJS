@@ -1,11 +1,16 @@
 <html>
-<head>
-<script src="zincore.js"></script>
-<script>
-ZinCore.PluginLoaded=function(o){o();};
-ZinCore.LoadPlugin("plugin");
-</script>
-</head>
-<body>
-</body>
+    <head>
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script src="zincore.js"></script>
+        <script>
+            zinCore.pluginLoaded=function(o){o();};
+            zinCore.loadPlugin("plugin");
+            
+            alert(zinInfo.getSize()[0]);
+            alert(zinInfo.getSize()[1]);
+            alert(zinInfo.isMobile());
+        </script>
+    </head>
+    <body>
+    </body>
 </html>
