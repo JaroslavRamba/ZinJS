@@ -23,10 +23,10 @@ var zinCore={
     }
 }
 
-
 var zinInfo={
     width: $(window).width(),
     height: $(window).height(),
+    plugins: new Array(),
     getSize: function(){
         return [$(window).width(),$(window).height()]; 
     },
@@ -40,16 +40,51 @@ var zinInfo={
             ){
             return true;
         }
-        
-        
         return false;
+    },
+    addPlugin: function(data){
+        if(data instanceof(ZinPlugin))
+        {
+            this.plugins.push(data);
+            return true;
+        }
+        return false;
+    },
+    isExistsPlugin: function(data){
+        if(data instanceof(ZinPlugin))
+        {
+            for (var plugin in this.plugins)
+            {
+                if(this.plugins[plugin].equals(data)){
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    
     }
-
 }
 
-/*
-    var myArray = new Array();
-    myArray.push("string 1");
-    myArray.push("string 2");
-    myArray.pop();
- **/
+function ZinPlugin(name, path, type){
+    this.name =  name;
+    this.path = path;
+    this.type = type;
+    this.equals = function(data){ 
+        if(data instanceof(ZinPlugin))
+        {
+            if(data.name!=this.name){
+                return false;
+            }
+            if(data.path!=this.path){
+                return false;
+            }
+            if(data.type!=this.type){
+                return false;
+            }
+            return true;
+        }
+        return false;
+    };
+}
+

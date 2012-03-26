@@ -6,9 +6,20 @@
             zinCore.pluginLoaded=function(o){o();};
             zinCore.loadPlugin("plugin");
             
-            alert(zinInfo.getSize()[0]);
+            /*alert(zinInfo.getSize()[0]);
             alert(zinInfo.getSize()[1]);
             alert(zinInfo.isMobile());
+             */
+            
+            var temp = new ZinPlugin('a','b','c');
+            var temp2 = new ZinPlugin('c','c','c');
+            var temp3 = new ZinPlugin('c','c','c');
+            zinInfo.addPlugin(temp);
+            zinInfo.addPlugin(temp2);
+            
+            alert(zinInfo.isExistsPlugin(temp)); //true
+            alert(zinInfo.isExistsPlugin(temp2)); //true
+            alert(zinInfo.isExistsPlugin(temp3)); //false
         </script>
     </head>
     <body>
