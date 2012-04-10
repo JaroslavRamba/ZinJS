@@ -25,91 +25,76 @@
 		<script src="zinjs-0.1.js"></script>
 		<script>
 			// = zinjs();
-			var api = zinjs();
 			// zinjs().init();
+			// zinjs().core{width,height,browser}
+			var api = zinjs();
 			api.init();
-			// core{width,height,browser}
-			$id("width").innerHTML="sirka: "+core.width+"px";
-			$id("height").innerHTML="vyska: "+core.height+"px";
-			$id("browser").innerHTML="typ prohlizece: "+core.browser;
+			
+			
 			// $id(idcko) --> idcko nejakeho elementu
-			// $one(selector) --> vraci jeden element dle selectoru ( div > ul > li )
-			// $all(selector) --> vraci vsechny elementy dle selectoru ( div > ul > li )
+			// $one(selector) --> vraci jeden element dle selectoru
+			// $all(selector) --> vraci vsechny elementy dle selectoru
+			$id("width").innerHTML="sirka: "+api.core.width+"px";
+			$id("height").innerHTML="vyska: "+api.core.height+"px";
+			$id("browser").innerHTML="typ prohlizece: "+api.core.browser;
+			
+			
+			// styly = new Styles();
+			// .add({css properties}, overwrite); // overwrite = true/false
+			// .clear() // smazani celeho stylu
+			// .clear(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+            var styly = new Styles();
+            styly.add({
+				position: "absolute",
+				top: "100px",
+                transform: {
+                    scale: 2,
+                    rotate: "60deg",
+                    translate: "20px, 50px"
+                }
+            });
+			styly.add({
+                left: "300px"
+            });
+			//styly.clear();
+			//styly.clear(["left","transform-translate"]);
 			
 			
 			// kontejner = new Element("prvek");
 			// ID - $id
+			// CLASS - $all
+			// DOM - $all
+			// "staticke vytvoreni" --> funkce returnujici new Element()
+			// .newCss(Styles); --> dle jiz vytvoreneho stylu
+			// .addCss({css properties}, overwrite); // overwrite = true/false
+			// .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
 			var sirka = new Element("#width");
 			var vyska = new Element("#height");
 			var test = new Element("#test");
 			var druhy = new Element("#druhy");
 			var browser = new Element("#browser");
-			// CLASS - $all
 			var allDemos = new Element(".demo");
-			// DOM - $all
 			var allDives = new Element("div");
-			// "staticke vytvoreni" --> funkce returnujici new Element()
 			var pokus = createElement("body");
 			var treti = createElement("#treti");
-			
-			// Element ma metody:
-			// rotate (x, y, z) --> bezne se pouziva rotace kolem osy Z
-			// --> pokud zadame jen jeden parametr, tak rotujeme kolem osy Z
-			// --> muzeme pouzit +/-
-			test.rotate(-180,0,0);
-			browser.rotate(30);
-			// scale --> bez jednotek
-			browser.scale(2);
-			// perspective --> v px
-			test.perspective(0);
-			// translate --> vcetne px/%/em
-			browser.translate("80%", "6em");
-			sirka.translate("2em", "50%");
-			vyska.translate("5em", "35px");
-			test.translate("7em", "50%");
-			// translate3d
-			test.translate3d("30px", "50px", "0px");
-			// transformOrigin
-			test.transformOrigin("center", "center")
-			// preserve3d
-			test.preserve3d();
-
-			// arrayCss
-			// --> jako argument associativni pole css vlastnosti
-			// --> lze pouzit i transform a ostatni --> sam se pouzije vendor prefix
-			// --> misto pomlcek psat velke prvni pismeno!!
-			allDemos.arrayCss({
-				width: "200px",
-				textAlign: "center",
-				border: "2px solid",
-				borderRadius: "25px",
-				transform: "scale(1.0)"
-			});
-			
-			allDives.arrayCss({
+            
+            test.newCss(styly);   
+            browser.newCss(styly);
+            vyska.newCss(styly);
+            browser.addCss({
+                left: "250px"
+            }, true);
+            vyska.clearCss(["transform-translate"]);
+			styly.clear(["transform-translate"]);
+			test.newCss(styly);
+            browser.addCss({
+                top: "150px"
+            });
+            test.addCss({
 				position: "absolute",
-				left: "300px",
-				top: "100px"
-			});
-			
-			pokus.arrayCss({
-				height: "80%",
-				width: "80%"
-			});
-			
-			// clear vlastnosti
-			// () --> vsech
-			// ("..") --> konkretni
-			treti.clearCss();
-			test.clearCss("transform");
-			
-			test.translate("3em", "5em");
-			test.scale(1.2);
-			test.arrayCss({
-				tranform: "scale(1.3)",
-				left: "200px"
-			});
-			
+                left: "500px"
+            });
+            
 		</script>
     </body>
 </html>

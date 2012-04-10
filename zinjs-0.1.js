@@ -1,12 +1,12 @@
 (function ( document, window ) {
 	/* ******************** */
 	/* ******************** */
-	/* ****** ZAKLAD ****** */
+	/* ******* CORE ******* */
 	/* ******************** */
 	/* ******************** */
 	
 	// JADRO
-	var core = window.core = {
+	var core = {
 		browser: "",
 		width: $(window).width(),
 		height: $(window).height()
@@ -29,89 +29,155 @@
         return context.querySelectorAll(selector);
     };
 	
-	// PODPORA PROHLIZECE
-	var getKey = function ( type ) {
-		var key, typeBig = type.charAt(0).toUpperCase() + type.substr(1);
-		if ( $one("body").style[core.browser+typeBig] !== undefined ) {
-			key = core.browser+typeBig;
+	// KOPIRUJICI KONSTRUKTOR PRO STYLY
+	function clone (obj) {
+		if (obj == null || typeof(obj) != 'object') {
+			return obj;    
 		}
-		else if ( $one("body").style[type] !== undefined ) {
-			key = type;
+		var temp = new obj.constructor(); 
+		for (var key in obj) {
+			temp[key] = clone(obj[key]);    
 		}
-		return key;
-	};
+		return temp;
+	}
+    	
+	/* ******************** */
+	/* ******************** */
+	/* **** CSS - CORE **** */
+	/* ******************** */
+	/* ******************** */
 		
-	// ZAPSANI DO STYLU	
-	function writeCss ( id, prop, type ) { // TODO --> editace jiz stavajiciho stylu
-		var key = getKey (type);
-		if (id.style[key]) {
-			id.style[key] += prop;
+	// PODPORA PROHLIZECE
+	function getKey ( type ) {
+        var typeSmall = type.charAt(0).toLowerCase() + type.substr(1).toLowerCase();
+		if ( $one("body").style[core.browser+typeSmall] !== undefined ) {
+			return(core.browser+typeSmall);
+		}
+		else if ( $one("body").style[typeSmall] !== undefined ) {
+			return(typeSmall);
+		}
+        return null;
+	};
+	
+	// ZAPIS CSS STYLE
+	function writeCss ( id, properties ) {
+        var key, data = "", count = 0;
+        for (var type in properties) {
+			count++;
+            key = getKey (type);
+            if (properties[type] instanceof Object) {
+                data += key + ":";
+                for (var item in properties[type]) {
+                    data += " " + item + "(" +  properties[type][item] + ")";
+                }
+                data += "; ";
+            }
+            else {
+                data += key + ": " + properties[type] + "; ";
+            }
+        }
+		if (count == 0) {
+			id.removeAttribute("style");
 		}
 		else {
-			id.style[key] = prop;
+			id.setAttribute("style", data);
 		}
 	};
 
-	// ZAPSANI DO STYLU	
-	function clearCss ( id, type ) {
-		if (type !== undefined) {
-			var key = getKey (type);
-			if (id.style[key])
-				id.style[key] = "";
-		}
-		else {
-			//id.removeAttribute('style'); // TODO --> nevim proc nefunguje :( 
-			id.setAttribute('style', null);
-		}
-	};
-		
-	// CSS VSTUP Z NASICH METOD ELEMENTU
-	function css ( id, properties, type ) {
+	// ID / NodeList
+	function css ( id, properties ) {
 		if (id instanceof NodeList) {
 			for (var i = 0; i < id.length; i++) {
-				writeCss (id[i], properties, type);
-			}
-		}
-		else
-			writeCss (id, properties, type);
-	};
-	
-	// CSS VSTUP POMOCI ASSOCIATIVNIHO POLE
-	function arrayCss ( id, properties ) {
-		var prop;
-		if (id instanceof NodeList) {				
-			for (var i = 0; i < id.length; i++) {
-				for (prop in properties ) {
-					writeCss (id[i], properties[prop], prop);
-				}
+				writeCss(id[i], properties);
 			}
 		}
 		else {
-			for (prop in properties ) {
-				writeCss (id, properties[prop], prop);
-			}
-		}
+            writeCss(id, properties);
+        }
 	};
 	
-	// ZJISTENI PREFIXU PROHLIZECE
-	function checkBrowser () {
-		var style = $one("body").style,
-		prefixes = 'Webkit Moz O Ms Khtml'.split(' '),
-		css = "Transform",
-		result = null,
-		vendors = (prefixes.join(css + ' ')+css).split(' ');
-		for ( var i in vendors ) {
-			if ( style[ vendors[i] ] !== undefined ) {
-				result = vendors[i];
-				break;
-			}
-		}
-		if (result)
-			return (result.substr(0,result.search("Transform")));
-		else
-			return ("");
+    /* ******************** */
+	/* ******************** */
+	/* ******** CSS ******* */
+	/* ******************** */
+	/* ******************** */
+    
+    // KONSTRUKTOR
+    var Styles = window.Styles = function () {
+        this.css = {};
+		return this;
+	}
+    	
+    // ZAPISOVANI / PREPISOVANI (overwrite=true)
+	Styles.prototype.add = function ( x, overwrite ) {
+        if (arguments.length == 1) {
+            overwrite = true;
+        }
+        for (var type in x ) {
+            if (getKey (type)) {
+                if (!this.css[type]) {
+                    this.css[type] = x[type];
+                }
+                else {
+                    if (overwrite) {
+                        this.css[type] = x[type];
+                    }
+                    else {
+                        alert ("Hodnota jiz existuje a nemate zapnute prepisovani.");
+                    }
+                }
+            }
+            else {
+                alert("Pozor, priradili jste do stylu nesmysl: "+type);
+            }
+        }
 	};
-	
+    
+    // MAZANI
+    Styles.prototype.clear = function ( x ) {
+        var type;
+        if (arguments.length == 0) {
+            for (type in this.css ) {
+                delete this.css[type];
+            }
+        }
+        else if (arguments.length == 1) {
+            for (type in x ) {
+                var inside = x[type].split("-");
+                if (this.css[inside[0]]) {
+                    if (inside.length == 1) {
+                        delete this.css[inside[0]];
+                    }
+                    else if (inside.length == 2) {
+                        if (this.css[inside[0]][inside[1]]) {
+                            delete this.css[inside[0]][inside[1]];
+                        }
+                        var i = 0;
+                        for (var empty in this.css[inside[0]]) {
+                            i++;
+                        }
+                        if (i == 0) {
+                            delete this.css[inside[0]];
+                        }
+                    }
+                }
+            }
+        }
+	};
+    
+    // TESTING - SHOW STYLE
+    Styles.prototype.show = function () {
+        alert("Style:");
+        for (var type in this.css ) {
+            alert(type + ": " + this.css[type]);
+            if (this.css[type] instanceof Object) {
+                for (var type2 in this.css[type]) {
+					alert(type2 + ": " + this.css[type][type2]);
+                }
+            }
+        }		
+	};
+    
 	/* ******************** */
 	/* ******************** */
 	/* ****** ELEMENT ***** */
@@ -127,51 +193,34 @@
 		else {
 			this.id = $all(id);
 		}
+        this.styles = new Styles();
 		return this;
 	}
-	
-	Element.prototype.rotate = function ( x, y, z ) {
-		if (arguments.length == 1) {
-			z = x;
-			x = y = 0;
+    
+    Element.prototype.addCss = function ( x, overwrite ) {
+        if (arguments.length == 1) {
+            overwrite = true;
+        }
+        this.styles.add(x, overwrite);
+        css (this.id, this.styles.css);
+	};
+    
+    Element.prototype.clearCss = function ( x ) {
+        if (arguments.length == 0) {
+            this.styles.clear();
+        }
+        else {
+			this.styles.clear(x);
 		}
-		var data = "";
-		if (x!=0) data += " rotateX(" + x + "deg)";
-		if (y!=0) data += " rotateY(" + y + "deg)";
-		if (z!=0) data += " rotateZ(" + z + "deg)";
-		css ( this.id, data, "Transform");
+        css (this.id, this.styles.css);
 	};
-	
-	Element.prototype.scale = function ( x ) {
-		css ( this.id, " scale(" + x + ")", "Transform");
-	};
-	
-	Element.prototype.perspective = function ( x ) {
-		css ( this.id, " perspective(" + x + "px)", "Transform");
-	};
-	
-	Element.prototype.translate = function ( x, y ) {
-		css ( this.id, " translate(" + x + ", " + y + ")", "Transform");
-	};
-	
-	Element.prototype.translate3d = function ( x, y, z ) {
-		css ( this.id, " translate3d(" + x + ", " + y + ", " + z + ")", "Transform");
-	};
-		
-	Element.prototype.transformOrigin = function ( x, y ) {
-		css ( this.id, " " + x + " " + y, "TransformOrigin");
-	};
-
-	Element.prototype.preserve3d = function () {
-		css ( this.id, " preserve-3d", "TransformStyle");
-	};
-	
-	Element.prototype.arrayCss = function ( properties ) {
-		arrayCss ( this.id, properties);
-	};
-
-	Element.prototype.clearCss = function ( type ) {
-		clearCss ( this.id, type);
+    
+    Element.prototype.newCss = function ( x ) {
+        if (x instanceof Styles) {
+			delete this.styles;
+			this.styles = clone (x);
+			css (this.id, this.styles.css);
+        }
 	};
 	 
 	// staticke vytvoreni
@@ -185,13 +234,35 @@
 	/* ******************** */
 	/* ******************** */
 	
+	// ZJISTENI PREFIXU PROHLIZECE
+	function checkBrowser () {
+		var style = $one("body").style,
+		prefixes = 'Webkit Moz O Ms Khtml'.split(' '),
+		css = "Transform",
+		result = null,
+		vendors = (prefixes.join(css + ' ')+css).split(' ');
+		for ( var i in vendors ) {
+			if ( style[ vendors[i] ] !== undefined ) {
+				result = vendors[i];
+				break;
+			}
+		}
+		if (result) {
+			return ("-" + result.substr(0,result.search("Transform")).toLowerCase() + "-");
+		}
+		else {
+			return ("");
+		}
+	};
+	
 	var zinjs = window.zinjs = function () {	
 		var init = function () {
 			core.browser = checkBrowser();
 		};
 		
 		return ({
-            init: init
+            init: init,
+            core: core
         });
 	};
 	
