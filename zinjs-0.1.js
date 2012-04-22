@@ -31,7 +31,7 @@
         return context.querySelectorAll(selector);
     };
 	
-    //copy constructor for styles
+    //copy constructor for style
     function clone (object) {
         if (object == null || typeof(object) != 'object') {
             return object;    
