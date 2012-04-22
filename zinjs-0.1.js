@@ -1,5 +1,4 @@
 (function ( document, window ) {
-
     var Zinjs = window.Zinjs = function () {	
         var init = function () {
             Core.browser = checkBrowser();
@@ -225,6 +224,5 @@
 
         return "";
         
-    };
-	
+    }
 })(document, window);
