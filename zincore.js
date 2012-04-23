@@ -46,7 +46,8 @@ var zinCore={
                         zinPlugin.content.prototype=new Component();
                         break;
                     case ZinPluginType.Event:
-                        alert("unimplemented");
+                        eval("Component.prototype."+zinPlugin.name+"=null");
+                        eval(zinPlugin.content+"(Component.prototype)");
                         break;
                 }
                 zinInfo.addPlugin(tmpZinPluginInfo);
@@ -154,9 +155,21 @@ function ZinPluginPrototype(name,type,content)
     this.name=name;
     this.content=content;
 }
-function Component()
+function Component(elem)
 {
+    if(elem!=undefined)
+        this.__proto__=elem;
+    else
+        this.__proto__=this.htmlElement=document.createElement("div");
     this.hello=function(){
         alert("Hello i'am a component");
     };
+    this.find=function(selector)
+    {
+        return this.querySelectorAll(selector);
+    }
+    this.render=function()
+    {
+        return this.htmlElement;
+    }
 }
