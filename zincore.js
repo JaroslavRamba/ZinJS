@@ -45,6 +45,9 @@ var zinCore={
                         eval(zinPlugin.content.name+"=zinPlugin.content");
                         zinPlugin.content.prototype=new Component();
                         break;
+                    case ZinPluginType.Event:
+                        alert("unimplemented");
+                        break;
                 }
                 zinInfo.addPlugin(tmpZinPluginInfo);
             }
