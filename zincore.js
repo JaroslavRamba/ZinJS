@@ -74,7 +74,7 @@ var zinCore={
                 onLoaded(xmlhttp.responseText);
             }
         }
-        xmlhttp.open("GET",pluginName+".js",true);
+        xmlhttp.open("GET",pluginName+".js",false);
         xmlhttp.send();
     }
 }
@@ -156,5 +156,7 @@ function ZinPluginPrototype(name,type,content)
 }
 function Component()
 {
-    
+    this.hello=function(){
+        alert("Hello i'am a component");
+    };
 }
