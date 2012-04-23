@@ -1,4 +1,3 @@
-function plugin()
-{
-    alert("Run");
-}
+new ZinPluginPrototype("testplugin",ZinPluginType.Action,function(){
+    
+})
