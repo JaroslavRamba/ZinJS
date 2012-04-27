@@ -120,6 +120,19 @@ var zinInfo={
             return false;
         }
     
+    },
+    browser: function () {
+        var style = getNodeBySelector("body").style;
+        var vendors = new Array("WebkitTransform", "MozTransform", "OTransform","MsTransform","KhtmlTransform");
+        for ( var type in vendors ) {
+            if ( style[vendors[type]] !== undefined ) {
+                var result = vendors[type];
+                return ("-" + result.substr(0,result.search("Transform")).toLowerCase() + "-");
+            }
+        }
+
+        return "";
+        
     }
 }
 
@@ -155,13 +168,21 @@ function ZinPluginPrototype(name,type,content)
     this.name=name;
     this.content=content;
 }
-function Component(elem)
+function getKey ( type ) {
+        var typeSmall = type.toLowerCase();
+        var typeSmallWithPrefix = zinInfo.browser() + typeSmall;
+        if ( getNodeBySelector("body").style[typeSmallWithPrefix] !== undefined ) {
+            return typeSmallWithPrefix;
+        }
+        else if ( getNodeBySelector("body").style[typeSmall] !== undefined ) { //useless? browser can be ""
+            return typeSmall;
+        }
+        console.log(type.toString() + " is undefined in this browser");
+        return null;
+    };
+function Component(node)
 {
-    if(elem!=undefined)
-        this.__proto__=elem;
-    else
-        this.__proto__=this.htmlElement=document.createElement("div");
-    this.hello=function(){
+  this.hello=function(){
         alert("Hello i'am a component");
     };
     this.find=function(selector)
@@ -172,4 +193,101 @@ function Component(elem)
     {
         return this.htmlElement;
     }
+   this.node=document.querySelector(node);
+    this.styles = new Styles();
 }
+Component.prototype.addCss = function ( properties, overwrite ) {
+        if (arguments.length == 1) {
+            overwrite = true;
+        }
+        this.styles.addCss(properties, overwrite);
+        setCss(this.node, this.styles.css);
+    };
+    
+    Component.prototype.clearCss = function ( properties ) {
+        if (arguments.length == 0) {
+            this.styles.clearCss();
+        }
+        else {
+            this.styles.clearCss(properties);
+        }
+        setCss(this.node, this.styles.css);
+    };
+    
+    Component.prototype.newCss = function ( x ) {
+        if (x instanceof Styles) {
+            delete this.styles;
+            this.styles = clone (x);
+            setCss(this.node, this.styles.css);
+        }
+    }
+var Styles = window.Styles = function () {
+        this.css = {};
+        return this;
+    }
+    	
+    // write / overwrite (overwrite=true)
+    Styles.prototype.addCss = function ( properties , overwrite ) {
+        if (arguments.length == 1) {
+            overwrite = true;
+        }
+        
+        for (var type in properties ) {
+            if (getKey (type)) {
+                if (!this.css[type]) {
+                    this.css[type] = properties[type];
+                }
+                else {
+                    if (overwrite) {
+                        this.css[type] = properties[type];
+                    }
+                    else {
+                        console.log(type.toString() + " not rewritable");
+                    }
+                }
+            }
+        }
+    };
+    
+    Styles.prototype.clearCss = function ( properties ) {
+        var type;
+        if (arguments.length == 0) {
+            for (type in this.css ) {
+                delete this.css[type];
+            }
+        }
+        else if (arguments.length == 1) {
+            for (type in properties ) {
+                var inside = properties[type].split("-");
+                if (this.css[inside[0]]) {
+                    if (inside.length == 1) {
+                        delete this.css[inside[0]];
+                    }
+                    else if (inside.length == 2) {
+                        if (this.css[inside[0]][inside[1]]) {
+                            delete this.css[inside[0]][inside[1]];
+                        }
+                        if (this.css[inside[0]].length == 0) { //useless?
+                            delete this.css[inside[0]];
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            console.log("Styles clearCss has bad parameters");
+        }
+    };
+    
+    // Print all styles
+    Styles.prototype.showCss = function () {
+        console.log("Style:");
+        for (var type in this.css ) {
+            console.log(type + ": " + this.css[type]);
+            if (this.css[type] instanceof Object) {
+                for (var type2 in this.css[type]) {
+                    console.log(type2 + ": " + this.css[type][type2]);
+                }
+            }
+        }		
+    };
