@@ -1,22 +1,23 @@
 <html>
     <head>
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-        <script src="zincore.js"></script>
+        <script src="./js/zinjs.js"></script>
         <title>ZinJS</title>
 
         <script>
-            zinCore.loadPlugin("./js/plugins/testplugin");
-            s=new Scroll();
-            //s.hello();
-            //s.__proto__.hello();
-            c=new Component();
-            //c.hello();
-            /*alert(zinInfo.getSize()[0]);
+            $(document).ready(function() {
+                zinCore.loadPlugin("js/plugins/testplugin");
+                s = new Scroll();
+                //s.hello();
+                //s.__proto__.hello();
+                c = new createComponent();
+                //c.hello();
+                /*alert(zinInfo.getSize()[0]);
             alert(zinInfo.getSize()[1]);
             alert(zinInfo.isMobile());
-             */
+                 */
             
-            /*  var temp = new ZinPlugin('a','b','c');
+                /*  var temp = new ZinPlugin('a','b','c');
             var temp2 = new ZinPlugin('c','c','c');
             var temp3 = new ZinPlugin('c','c','c');
             zinInfo.addPlugin(temp);
@@ -26,10 +27,81 @@
             alert(zinInfo.isExistsPlugin(temp2)); //true
             alert(zinInfo.isExistsPlugin(temp3)); //false
             
-             */
-            //alert(zinInfo.getSize()[0]);
-            //alert(zinInfo.getSize()[1]);
-            //alert(zinInfo.isMobile());
+                 */
+                //alert(zinInfo.getSize()[0]);
+                //alert(zinInfo.getSize()[1]);
+                //alert(zinInfo.isMobile());
+                // = zinjs();
+                // zinjs().init();
+                // zinjs().core{width,height,browser}
+                var api = Zinjs();
+                api.init();
+			
+			
+                // $id(idcko) --> idcko nejakeho elementu
+                // $one(selector) --> vraci jeden element dle selectoru
+                // $all(selector) --> vraci vsechny elementy dle selectoru
+                getNodeById("width").innerHTML="sirka: "+api.Core.width+"px";
+                getNodeById("height").innerHTML="vyska: "+api.Core.height+"px";
+                getNodeById("browser").innerHTML="typ prohlizece: "+api.Core.browser;
+			
+			
+                // styly = new Styles();
+                // .add({css properties}, overwrite); // overwrite = true/false
+                // .clear() // smazani celeho stylu
+                // .clear(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+                var styly = new Styles();
+                styly.addCss({
+                    position: "absolute",
+                    top: "100px",
+                    transform: {
+                        scale: 2,
+                        rotate: "60deg",
+                        translate: "20px, 50px"
+                    }
+                });
+                styly.addCss({
+                    left: "300px"
+                });
+                //styly.clear();
+                //styly.clear(["left","transform-translate"]);
+			
+			
+                // kontejner = new Element("prvek");
+                // ID - $id
+                // CLASS - $all
+                // DOM - $all
+                // "staticke vytvoreni" --> funkce returnujici new Element()
+                // .newCss(Styles); --> dle jiz vytvoreneho stylu
+                // .addCss({css properties}, overwrite); // overwrite = true/false
+                // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+                var sirka = new Element("#width");
+                var vyska = new Element("#height");
+                var test = new Element("#test");
+                var druhy = new Element("#druhy");
+                var browser = new Element("#browser");
+                var allDemos = new Element(".demo");
+                var allDives = new Element("div");
+                var pokus = createComponent("body");
+                var treti = createComponent("#treti");
+            
+                test.newCss(styly);   
+                browser.newCss(styly);
+                vyska.newCss(styly);
+                browser.addCss({
+                    left: "250px"
+                }, true);
+                vyska.clearCss(["transform-translate"]);
+                styly.clearCss(["transform-translate"]);
+                test.newCss(styly);
+                browser.addCss({
+                    top: "150px"
+                });
+                test.addCss({
+                    position: "absolute",
+                    left: "500px"
+                });
+            });
         </script>
 
     </head>
@@ -40,80 +112,5 @@
         <p id="test" class="demo">TEST</p>
         <p id="druhy" class="demo">DRUHY</p>
         <div id="treti">TRETI</div>
-
-        <script src="./js/zincore.js"></script>
-        <script>
-            // = zinjs();
-            // zinjs().init();
-            // zinjs().core{width,height,browser}
-            var api = Zinjs();
-            api.init();
-			
-			
-            // $id(idcko) --> idcko nejakeho elementu
-            // $one(selector) --> vraci jeden element dle selectoru
-            // $all(selector) --> vraci vsechny elementy dle selectoru
-            getNodeById("width").innerHTML="sirka: "+api.Core.width+"px";
-            getNodeById("height").innerHTML="vyska: "+api.Core.height+"px";
-            getNodeById("browser").innerHTML="typ prohlizece: "+api.Core.browser;
-			
-			
-            // styly = new Styles();
-            // .add({css properties}, overwrite); // overwrite = true/false
-            // .clear() // smazani celeho stylu
-            // .clear(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
-            var styly = new Styles();
-            styly.addCss({
-                position: "absolute",
-                top: "100px",
-                transform: {
-                    scale: 2,
-                    rotate: "60deg",
-                    translate: "20px, 50px"
-                }
-            });
-            styly.addCss({
-                left: "300px"
-            });
-            //styly.clear();
-            //styly.clear(["left","transform-translate"]);
-			
-			
-            // kontejner = new Element("prvek");
-            // ID - $id
-            // CLASS - $all
-            // DOM - $all
-            // "staticke vytvoreni" --> funkce returnujici new Element()
-            // .newCss(Styles); --> dle jiz vytvoreneho stylu
-            // .addCss({css properties}, overwrite); // overwrite = true/false
-            // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
-            var sirka = new Component("#width");
-            var vyska = new Component("#height");
-            var test = new Component("#test");
-            var druhy = new Component("#druhy");
-            var browser = new Component("#browser");
-            var allDemos = new Component(".demo");
-            var allDives = new Component("div");
-            var pokus = createComponent("body");
-            var treti = createComponent("#treti");
-            
-            test.newCss(styly);   
-            browser.newCss(styly);
-            vyska.newCss(styly);
-            browser.addCss({
-                left: "250px"
-            }, true);
-            vyska.clearCss(["transform-translate"]);
-            styly.clearCss(["transform-translate"]);
-            test.newCss(styly);
-            browser.addCss({
-                top: "150px"
-            });
-            test.addCss({
-                position: "absolute",
-                left: "500px"
-            });
-            
-        </script>
     </body>
 </html>

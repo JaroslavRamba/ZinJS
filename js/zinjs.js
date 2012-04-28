@@ -3,7 +3,7 @@
     {
         return typeof(o)=="function";
     }
-    var zinCore={
+    zinCore={
         loadPlugin: function(pluginName){
             var xmlhttp=false;
             /*@cc_on @*/
@@ -199,8 +199,8 @@
     }
     
     // static create
-    var createComponent = window.createComponent = function ( node ) {
-        return new Component(node);
+    createComponent = window.createComponent = function () {
+        return new Component();
     };
     
     
