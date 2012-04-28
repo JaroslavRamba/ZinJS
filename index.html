@@ -5,7 +5,7 @@
         <title>ZinJS</title>
 
         <script>
-            zinCore.loadPlugin("testplugin");
+            zinCore.loadPlugin("./js/plugins/testplugin");
             s=new Scroll();
             //s.hello();
             //s.__proto__.hello();
@@ -41,7 +41,7 @@
         <p id="druhy" class="demo">DRUHY</p>
         <div id="treti">TRETI</div>
 
-        <script src="zinjs-0.1.js"></script>
+        <script src="./js/zincore.js"></script>
         <script>
             // = zinjs();
             // zinjs().init();
@@ -87,15 +87,15 @@
             // .newCss(Styles); --> dle jiz vytvoreneho stylu
             // .addCss({css properties}, overwrite); // overwrite = true/false
             // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
-            var sirka = new Element("#width");
-            var vyska = new Element("#height");
-            var test = new Element("#test");
-            var druhy = new Element("#druhy");
-            var browser = new Element("#browser");
-            var allDemos = new Element(".demo");
-            var allDives = new Element("div");
-            var pokus = createElement("body");
-            var treti = createElement("#treti");
+            var sirka = new Component("#width");
+            var vyska = new Component("#height");
+            var test = new Component("#test");
+            var druhy = new Component("#druhy");
+            var browser = new Component("#browser");
+            var allDemos = new Component(".demo");
+            var allDives = new Component("div");
+            var pokus = createComponent("body");
+            var treti = createComponent("#treti");
             
             test.newCss(styly);   
             browser.newCss(styly);
