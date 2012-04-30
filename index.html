@@ -8,43 +8,17 @@
             $(document).ready(function() {
                 zinCore.loadPlugin("js/plugins/testplugin");
                 s = new Scroll();
-                //s.hello();
-                //s.__proto__.hello();
                 c = new createComponent();
-                //c.hello();
-                /*alert(zinInfo.getSize()[0]);
-            alert(zinInfo.getSize()[1]);
-            alert(zinInfo.isMobile());
-                 */
             
-                /*  var temp = new ZinPlugin('a','b','c');
-            var temp2 = new ZinPlugin('c','c','c');
-            var temp3 = new ZinPlugin('c','c','c');
-            zinInfo.addPlugin(temp);
-            zinInfo.addPlugin(temp2);
-            
-            alert(zinInfo.isExistsPlugin(temp)); //true
-            alert(zinInfo.isExistsPlugin(temp2)); //true
-            alert(zinInfo.isExistsPlugin(temp3)); //false
-            
-                 */
-                //alert(zinInfo.getSize()[0]);
-                //alert(zinInfo.getSize()[1]);
-                //alert(zinInfo.isMobile());
-                // = zinjs();
-                // zinjs().init();
-                // zinjs().core{width,height,browser}
-                var api = Zinjs();
-                api.init();
-			
-			
-                // $id(idcko) --> idcko nejakeho elementu
-                // $one(selector) --> vraci jeden element dle selectoru
-                // $all(selector) --> vraci vsechny elementy dle selectoru
-                getNodeById("width").innerHTML="sirka: "+api.Core.width+"px";
-                getNodeById("height").innerHTML="vyska: "+api.Core.height+"px";
-                getNodeById("browser").innerHTML="typ prohlizece: "+api.Core.browser;
-			
+                widthcomp=new Component("#width");
+                widthcomp.render().innerHTML="sirka: "+zinInfo.width+"px";
+                
+                heightcomp=new Component("#height");
+                heightcomp.node.innerHTML="vyska: "+zinInfo.height+"px";
+                
+                browsercomp=new Component("#browser");
+                browsercomp.node.innerHTML="predpona browseru: "+zinInfo.browser()+"px";
+                
 			
                 // styly = new Styles();
                 // .add({css properties}, overwrite); // overwrite = true/false
@@ -75,13 +49,13 @@
                 // .newCss(Styles); --> dle jiz vytvoreneho stylu
                 // .addCss({css properties}, overwrite); // overwrite = true/false
                 // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
-                var sirka = new Element("#width");
-                var vyska = new Element("#height");
-                var test = new Element("#test");
-                var druhy = new Element("#druhy");
-                var browser = new Element("#browser");
-                var allDemos = new Element(".demo");
-                var allDives = new Element("div");
+                var sirka = new Component("#width");
+                var vyska = new Component("#height");
+                var test = new Component("#test");
+                var druhy = new Component("#druhy");
+                var browser = new Component("#browser");
+                var allDemos = new Component(".demo");
+                var allDives = new Component("div");
                 var pokus = createComponent("body");
                 var treti = createComponent("#treti");
             
