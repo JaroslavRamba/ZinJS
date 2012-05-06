@@ -23,6 +23,7 @@
                     xmlhttp = new XMLHttpRequest();
                 } catch (e) {
                     xmlhttp=false;
+                    console.log(e)
                 }
             }
             if (!xmlhttp && window.createRequest) {
@@ -30,8 +31,11 @@
                     xmlhttp = window.createRequest();
                 } catch (e) {
                     xmlhttp=false;
+                    console.log(e)
                 }
             }
+            if(!xmlhttp)
+                console.log("Sorry XMLHttpRequest not implemented");
             function addZinPlugin(zinPlugin)
             {
                 var tmpZinPluginInfo=new ZinPluginInfo(zinPlugin.name, "", zinPlugin.type);
