@@ -4,6 +4,19 @@
         <script src="./js/zinjs.js"></script>
         <title>ZinJS</title>
 
+        <style>
+
+            @-webkit-keyframes rotating {
+                from{
+                -webkit-transform: rotate(0deg);
+            }
+            to{
+                -webkit-transform: rotate(360deg);
+            }
+            }
+
+        </style>
+
         <script>
             $(document).ready(function() {
                 zinCore.loadPlugin("js/plugins/testplugin");
@@ -12,7 +25,19 @@
                 c = new createComponent();
             
                 widthcomp=new Component("#width");
-                widthcomp.rotate([5,6,7]);
+                
+                
+                var rotateStyle = new Styles();
+                rotateStyle.addCss({
+                    position: "absolute",
+                    transform: {
+                        rotate3d: "10,20,60,180deg"
+                    },
+                    transition: "all 1s ease-out"
+                });
+                
+                
+                widthcomp.rotate(); //rotateStyle
                 
                 
                 widthcomp.render().innerHTML="sirka: "+zinInfo.width+"px";
@@ -84,7 +109,7 @@
 
     </head>
     <body>
-        <p id="width" class="demo"></p>
+        <p id="width" class="demo" style="display: block; height: 50px;width: 50px"></p>
         <p id="height" class="demo"></p>
         <p id="browser" class="demo"></p>
         <p id="test" class="demo">TEST</p>
