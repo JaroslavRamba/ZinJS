@@ -8,7 +8,7 @@ new ZinPluginPrototype("rotate",ZinPluginType.Action,function(style){
             height: "100px",
             width: "100px",
             transition: "all 1s ease-out"
-        });
+        },false);
                 
                 
     }
