@@ -1,5 +1,4 @@
-new ZinPluginPrototype("rotate",ZinPluginType.Action,function(style){
-    
+new ZinPluginPrototype("rotate",ZinPluginType.Action,function(style){   
     if (arguments.length == 0) {
         this.addCss({
             transform: {
@@ -8,7 +7,7 @@ new ZinPluginPrototype("rotate",ZinPluginType.Action,function(style){
             display: "block",
             height: "100px",
             width: "100px",
-            transition: "all 1s ease-out",
+            transition: "all 1s ease-out"
         });
                 
                 
