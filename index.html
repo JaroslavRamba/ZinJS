@@ -7,10 +7,14 @@
         <script>
             $(document).ready(function() {
                 zinCore.loadPlugin("js/plugins/testplugin");
+                zinCore.loadPlugin("js/plugins/rotation");
                 s = new Scroll();
                 c = new createComponent();
             
                 widthcomp=new Component("#width");
+                widthcomp.rotate([5,6,7]);
+                
+                
                 widthcomp.render().innerHTML="sirka: "+zinInfo.width+"px";
                 
                 heightcomp=new Component("#height");

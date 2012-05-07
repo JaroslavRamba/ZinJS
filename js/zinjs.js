@@ -1,23 +1,23 @@
 (function ( document, window ) {
     function isFunction(o)
     {
-        return typeof(o)=="function";
+        return typeof(o)=="function"; //useless function
     }
     window.zinCore={
         loadPlugin: function(pluginName){
             var xmlhttp=false;
             /*@cc_on @*/
             /*@if (@_jscript_version >= 5)
-        try {
-            xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
             try {
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (E) {
-                xmlhttp = false;
+                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                try {
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (E) {
+                    xmlhttp = false;
+                }
             }
-        }
-        @end @*/
+            @end @*/
             if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
                 try {
                     xmlhttp = new XMLHttpRequest();
@@ -35,12 +35,10 @@
                 }
             }
             if(!xmlhttp)
-                console.log("Sorry XMLHttpRequest not implemented");
-            function addZinPlugin(zinPlugin)
-            {
+                console.log("Sorry XMLHttpRequest is not implemented.");
+            function addZinPlugin(zinPlugin) {
                 var tmpZinPluginInfo=new ZinPluginInfo(zinPlugin.name, "", zinPlugin.type);
-                if(!zinInfo.isExistsPlugin(tmpZinPluginInfo))
-                {
+                if(!zinInfo.isExistsPlugin(tmpZinPluginInfo)) {
                     switch(zinPlugin.type)
                     {
                         case ZinPluginType.Action:
@@ -57,25 +55,21 @@
                     }
                     zinInfo.addPlugin(tmpZinPluginInfo);
                 }
+                //info about else??
             }
-            function onLoaded(data)
-            {
+            function onLoaded(data) {
                 var object=eval(data);
-                if(object==undefined)return;
+                if(object==undefined)return; //merge this and next condition
                 if(!(object instanceof Object))return;
-                if(object instanceof Array)
-                {
+                if(object instanceof Array) {
                     for (var key in object) {  
-                        addZinPlugin(object[key]);
+                        addZinPlugin(object[key]); //where is condition with if(object instanceof ZinPluginPrototype) ??
                     }
-                }
-                else if(object instanceof ZinPluginPrototype)
-                {
-                    addZinPlugin(object);     
+                } else if(object instanceof ZinPluginPrototype) {
+                    addZinPlugin(object);
                 }
             }
-            xmlhttp.onreadystatechange=function()
-            {
+            xmlhttp.onreadystatechange=function() {
                 if (xmlhttp.readyState==4) {
                     onLoaded(xmlhttp.responseText);
                 }
@@ -115,9 +109,9 @@
         isExistsPlugin: function(data){
             if(data instanceof(ZinPluginInfo))
             {
-                for (var plugin in this.plugins)
+                for (var plugin in this.plugins) 
                 {
-                    if(this.plugins[plugin].equals(data)){
+                    if(this.plugins[plugin].equals(data)) {
                         return true;
                     }
                 }
@@ -184,12 +178,10 @@
             this.hello=function(){
                 alert("Hello i'am a component");
             };
-            this.find=function(selector)
-            {
+            this.find=function(selector) {
                 return this.node.querySelectorAll(selector);
             };
-            this.render=function()
-            {
+            this.render=function() {
                 return this.node;
             };
             this.node=document.querySelector(selector);
@@ -270,6 +262,7 @@
     
     
     })(document, window);
+    
     (function ( document, window ) {
    
         var Styles = window.Styles = function () {
