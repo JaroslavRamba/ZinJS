@@ -61,7 +61,8 @@
                         scale: 2,
                         rotate: "60deg",
                         translate: "20px, 50px"
-                    }
+                    },
+					transition: "all 1s linear 0"
                 });
                 styly.addCss({
                     left: "300px"
@@ -104,6 +105,23 @@
                     position: "absolute",
                     left: "500px"
                 });
+				test.addCss({
+                    transform: {
+                        scale: 3
+                    }
+                }, false);
+				test.addCss({
+                    transform: {
+                        rotate: "90deg"
+					}
+                }, true);
+				test.clearCss("transform");
+				test.addCss({
+                    transform: {
+						scale: 2,
+                        rotate: "120deg"
+					}
+                }, false);	
             });
         </script>
 

@@ -270,58 +270,73 @@
             return this;
         }
     	
-        // write / overwrite (overwrite=true)
-        Styles.prototype.addCss = function ( properties , overwrite ) {
-            if (arguments.length == 1) {
-                overwrite = true;
-            }
-        
-            for (var type in properties ) {
-                if (getKey (type)) {
-                    if (!this.css[type]) {
-                        this.css[type] = properties[type];
-                    }
-                    else {
-                        if (overwrite) {
-                            this.css[type] = properties[type];
-                        }
-                        else {
-                            console.log(type.toString() + " not rewritable");
-                        }
-                    }
-                }
-            }
-        };
+		// write / overwrite (overwrite=true)
+		Styles.prototype.addCss = function ( properties , overwrite ) {
+			if (arguments.length == 1) {
+				overwrite = true;
+			}
+			for (var type in properties ) {
+				if (properties[type] instanceof Object) {
+					if (!this.css[type]) {
+						this.css[type] = properties[type];
+					}
+					for (var item in properties[type]) {
+						if (overwrite || !this.css[type][item]) {
+							this.css[type][item] = properties[type][item];
+						}
+						else {
+							console.log(type.toString() + " " + item.toString() + " not rewritable");
+						}
+					}
+				}
+				else if (getKey (type)) {
+					if (!this.css[type]) {
+						this.css[type] = properties[type];
+					}
+					else {
+						if (overwrite) {
+							this.css[type] = properties[type];
+						}
+						else {
+							console.log(type.toString() + " not rewritable");
+						}
+					}
+				}
+			}
+		};
     
-        Styles.prototype.clearCss = function ( properties ) {
-            var type;
-            if (arguments.length == 0) {
-                for (type in this.css ) {
-                    delete this.css[type];
-                }
-            }
-            else if (arguments.length == 1) {
-                for (type in properties ) {
-                    var inside = properties[type].split("-");
-                    if (this.css[inside[0]]) {
-                        if (inside.length == 1) {
-                            delete this.css[inside[0]];
-                        }
-                        else if (inside.length == 2) {
-                            if (this.css[inside[0]][inside[1]]) {
-                                delete this.css[inside[0]][inside[1]];
-                            }
-                            if (this.css[inside[0]].length == 0) { //useless?
-                                delete this.css[inside[0]];
-                            }
-                        }
-                    }
-                }
-            }
-            else{
-                console.log("Styles clearCss has bad parameters");
-            }
-        };
+		Styles.prototype.clearCss = function ( properties ) {
+			var type;
+			if (arguments.length == 0) {
+				for (type in this.css ) {
+					delete this.css[type];
+				}
+			}
+			else if (arguments.length == 1) {
+				if (typeof(properties) === 'string' || s instanceof String) {
+					properties = new Array(properties);
+				}
+				for (type in properties ) {
+					var inside = properties[type].split("-");
+					if (this.css[inside[0]]) {
+						if (inside.length == 1) {
+							delete this.css[inside[0]];
+						}
+						else if (inside.length == 2) {
+							if (this.css[inside[0]][inside[1]]) {
+								delete this.css[inside[0]][inside[1]];
+							}
+							if (this.css[inside[0]].length == 0) { //useless?
+								delete this.css[inside[0]];
+							}
+						}
+					}
+				}
+			}
+			else{
+				console.log("Styles clearCss has bad parameters");
+			}
+		};
     
         // Print all styles
         Styles.prototype.showCss = function () {
