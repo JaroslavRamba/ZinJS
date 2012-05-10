@@ -1,15 +1,16 @@
 ZinJS.js
 ============
 www.zinjs.com
+
 We want to bring new dimension to internet presentations. 
 Our framework is based on CSS3 and Javascript.
 
 WHY ZinJS?
---------
+----------
 ZinJS = Zoom IN JavaScript or Zoom Is Not Just a Script
 
 LICENSE
----------
+--------
 Released under the new BSD License.
 
 Copyright (c) 2012, Jaroslav Ramba, Martin Kantor, Matěj Lang, David Šolc, Vít Steklý, Michal Koblasa
