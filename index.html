@@ -18,9 +18,24 @@
         </style>
 
         <script>
+            function obrazekzoom()
+            {
+               if(obr.tempzoom==1)
+                    {
+                        obr.tempzoom=0;
+                obr.zoom(100);
+                    }
+                    else
+                        {
+                            
+                obr.tempzoom=1
+                obr.zoom(200);
+                        }
+            }
             $(document).ready(function() {
                 zinCore.loadPlugin("js/plugins/testplugin");
                 zinCore.loadPlugin("js/plugins/rotate");
+                zinCore.loadPlugin("js/plugins/zoom");
                 s = new Scroll();
                 c = new createComponent();
             
@@ -79,6 +94,11 @@
                 // .newCss(Styles); --> dle jiz vytvoreneho stylu
                 // .addCss({css properties}, overwrite); // overwrite = true/false
                 // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+               var obrazek = new Component("#obrazek");
+                //obrazek.zoom(100);
+                window.obr=obrazek;
+               
+               
                 var sirka = new Component("#width");
                 var vyska = new Component("#height");
                 var test = new Component("#test");
@@ -133,5 +153,6 @@
         <p id="test" class="demo">TEST</p>
         <p id="druhy" class="demo">DRUHY</p>
         <div id="treti">TRETI</div>
+        <div id="cc">Klikni na obrazek <br/><img id="obrazek" onclick="obrazekzoom()" src="https://lh5.googleusercontent.com/-q9ZTSVPT784/T2HriCuR1QI/AAAAAAAAAMU/1d3P-Lpl2WA/s770/IMG_20120315_141523.jpg" /></div>
     </body>
 </html>
