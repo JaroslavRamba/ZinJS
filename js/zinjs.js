@@ -1,13 +1,14 @@
 (function ( document, window ) {
-    function isFunction(o)
-    {
-        return typeof(o)=="function"; //useless function
-    }
-    window.zinCore={
-        loadPlugin: function(pluginName){
-            var xmlhttp=false;
-            /*@cc_on @*/
-            /*@if (@_jscript_version >= 5)
+	
+	function isFunction(o) {
+		return typeof(o)=="function"; //useless function
+	}
+	
+	window.zinCore = {
+		loadPlugin: function(pluginName) {
+			var xmlhttp=false;
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
             try {
                 xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
             } catch (e) {
@@ -18,259 +19,260 @@
                 }
             }
             @end @*/
-            if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-                try {
-                    xmlhttp = new XMLHttpRequest();
-                } catch (e) {
-                    xmlhttp=false;
-                    console.log(e)
-                }
-            }
-            if (!xmlhttp && window.createRequest) {
-                try {
-                    xmlhttp = window.createRequest();
-                } catch (e) {
-                    xmlhttp=false;
-                    console.log(e)
-                }
-            }
-            if(!xmlhttp)
-                console.log("Sorry XMLHttpRequest is not implemented.");
-            function addZinPlugin(zinPlugin) {
-                var tmpZinPluginInfo=new ZinPluginInfo(zinPlugin.name, "", zinPlugin.type);
-                if(!zinInfo.isExistsPlugin(tmpZinPluginInfo)) {
-                    switch(zinPlugin.type)
-                    {
-                        case ZinPluginType.Action:
-                            eval("Component.prototype."+zinPlugin.name+"=zinPlugin.content");
-                            break;
-                        case ZinPluginType.Component:
-                            eval(zinPlugin.content.name+"=zinPlugin.content");
-                            zinPlugin.content.prototype=new Component();
-                            break;
-                        case ZinPluginType.Event:
-                            eval("Component.prototype."+zinPlugin.name+"=null");
-                            eval(zinPlugin.content+"(Component.prototype)");
-                            break;
-                    }
-                    zinInfo.addPlugin(tmpZinPluginInfo);
-                }
-                //info about else??
-            }
-            function onLoaded(data) {
-                var object=eval(data);
-                if(object==undefined)return; //merge this and next condition
-                if(!(object instanceof Object))return;
-                if(object instanceof Array) {
-                    for (var key in object) {  
-                        addZinPlugin(object[key]); //where is condition with if(object instanceof ZinPluginPrototype) ??
-                    }
-                } else if(object instanceof ZinPluginPrototype) {
-                    addZinPlugin(object);
-                }
-            }
-            xmlhttp.onreadystatechange=function() {
-                if (xmlhttp.readyState==4) {
-                    onLoaded(xmlhttp.responseText);
-                }
-            }
-            xmlhttp.open("GET",pluginName+".js",false);
-            xmlhttp.send();
-        }
-    }
+			if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+				try {
+					xmlhttp = new XMLHttpRequest();
+				} catch (e) {
+					xmlhttp=false;
+					console.log(e)
+				}
+			}
+			if (!xmlhttp && window.createRequest) {
+				try {
+					xmlhttp = window.createRequest();
+				} catch (e) {
+					xmlhttp=false;
+					console.log(e)
+				}
+			}
+			if(!xmlhttp)
+				console.log("Sorry XMLHttpRequest is not implemented.");
+			function addZinPlugin(zinPlugin) {
+				var tmpZinPluginInfo=new ZinPluginInfo(zinPlugin.name, "", zinPlugin.type);
+				if(!zinInfo.isExistsPlugin(tmpZinPluginInfo)) {
+					switch(zinPlugin.type)
+					{
+						case ZinPluginType.Action:
+							eval("Component.prototype."+zinPlugin.name+"=zinPlugin.content");
+							break;
+						case ZinPluginType.Component:
+							eval(zinPlugin.content.name+"=zinPlugin.content");
+							zinPlugin.content.prototype=new Component();
+							break;
+						case ZinPluginType.Event:
+							eval("Component.prototype."+zinPlugin.name+"=null");
+							eval(zinPlugin.content+"(Component.prototype)");
+							break;
+					}
+					zinInfo.addPlugin(tmpZinPluginInfo);
+				}
+			//info about else??
+			}
+			
+			function onLoaded(data) {
+				var object=eval(data);
+				if(object==undefined)return; //merge this and next condition
+				if(!(object instanceof Object))return;
+				if(object instanceof Array) {
+					for (var key in object) {  
+						addZinPlugin(object[key]); //where is condition with if(object instanceof ZinPluginPrototype) ??
+					}
+				} else if(object instanceof ZinPluginPrototype) {
+					addZinPlugin(object);
+				}
+			}
+			
+			xmlhttp.onreadystatechange=function() {
+				if (xmlhttp.readyState==4) {
+					onLoaded(xmlhttp.responseText);
+				}
+			}
+			
+			xmlhttp.open("GET",pluginName+".js",false);
+			xmlhttp.send();
+		}
+	}
 
-    window.zinInfo={
-        width: $(window).width(),
-        height: $(window).height(),
-        plugins: new Array(),
-        getSize: function(){
-            return [$(window).width(),$(window).height()]; 
-        },
-        isMobile: function(){
-            if( navigator.userAgent.match(/Android/i)
-                || navigator.userAgent.match(/iPhone/i)
-                || navigator.userAgent.match(/iPad/i)
-                || navigator.userAgent.match(/iPod/i)
-                || navigator.userAgent.match(/webOS/i)
-                || navigator.userAgent.match(/BlackBerry/i)
-                ){
-                return true;
-            }
-            return false;
-        },
-        addPlugin: function(data){
-            if(data instanceof(ZinPluginInfo))
-            {
-                this.plugins.push(data);
-                return true;
-            }
-            return false;
-        },
-        isExistsPlugin: function(data){
-            if(data instanceof(ZinPluginInfo))
-            {
-                for (var plugin in this.plugins) 
-                {
-                    if(this.plugins[plugin].equals(data)) {
-                        return true;
-                    }
-                }
+	window.zinInfo = {
+		width: $(window).width(),
+		height: $(window).height(),
+		plugins: new Array(),
+		getSize: function() {
+			return [$(window).width(),$(window).height()]; 
+		},
+		isMobile: function() {
+			if( navigator.userAgent.match(/Android/i)
+				|| navigator.userAgent.match(/iPhone/i)
+				|| navigator.userAgent.match(/iPad/i)
+				|| navigator.userAgent.match(/iPod/i)
+				|| navigator.userAgent.match(/webOS/i)
+				|| navigator.userAgent.match(/BlackBerry/i)
+				){
+				return true;
+			}
+			return false;
+		},
+		addPlugin: function(data) {
+			if(data instanceof(ZinPluginInfo))
+			{
+				this.plugins.push(data);
+				return true;
+			}
+			return false;
+		},
+		isExistsPlugin: function(data) {
+			if(data instanceof(ZinPluginInfo))
+			{
+				for (var plugin in this.plugins) 
+				{
+					if(this.plugins[plugin].equals(data)) {
+						return true;
+					}
+				}
             
-                return false;
-            }
+				return false;
+			}
     
-        },
-        browser: function () {
-            var style = document.querySelector("body").style;
-            var vendors = new Array("WebkitTransform", "MozTransform", "OTransform","MsTransform","KhtmlTransform");
-            for ( var type in vendors ) {
-                if ( style[vendors[type]] !== undefined ) {
-                    var result = vendors[type];
-                    return ("-" + result.substr(0,result.search("Transform")).toLowerCase() + "-");
-                }
-            }
+		},
+		browser: function () {
+			var style = document.querySelector("body").style;
+			var vendors = new Array("WebkitTransform", "MozTransform", "OTransform","MsTransform","KhtmlTransform");
+			for ( var type in vendors ) {
+				if ( style[vendors[type]] !== undefined ) {
+					var result = vendors[type];
+					return ("-" + result.substr(0,result.search("Transform")).toLowerCase() + "-");
+				}
+			}
+			return "";
+		}
+	}
 
-            return "";
-        
-        }
-    }
-
-    function ZinPluginInfo(name, path, type){
-        this.name =  name;
-        this.path = path;
-        this.type = type;
-        this.equals = function(data){ 
-            if(data instanceof(ZinPluginInfo))
-            {
-                if(data.name!=this.name){
-                    return false;
-                }
-                if(data.path!=this.path){
-                    return false;
-                }
-                if(data.type!=this.type){
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        };
-    }
-    var ZinPluginType={
-        Event:"event",
-        Action:"action",
-        Component:"component"
-    }
-    function ZinPluginPrototype(name,type,content)
-    {
-        this.type=type;
-        this.name=name;
-        this.content=content;
-    }
-    
+	function ZinPluginInfo(name, path, type) {
+		this.name =  name;
+		this.path = path;
+		this.type = type;
+		this.equals = function(data) { 
+			if(data instanceof(ZinPluginInfo)) {
+				if(data.name!=this.name) {
+					return false;
+				}
+				if(data.path!=this.path) {
+					return false;
+				}
+				if(data.type!=this.type) {
+					return false;
+				}
+				return true;
+			}
+			return false;
+		};
+	}
+	
+	var ZinPluginType = {
+		Event:"event",
+		Action:"action",
+		Component:"component"
+	}
+	
+	function ZinPluginPrototype(name,type,content) {
+		this.type=type;
+		this.name=name;
+		this.content=content;
+	}
     
 })(document, window);
 
 (function ( document, window ) {
-    (function ( document, window ) {
-        window.Component=function (selector)
-        {
-            this.hello=function(){
-                alert("Hello i'am a component");
-            };
-            this.find=function(selector) {
-                return this.node.querySelectorAll(selector);
-            };
-            this.render=function() {
-                return this.node;
-            };
-            this.node=document.querySelector(selector);
-            this.styles = new Styles();
-        };
+	(function ( document, window ) {
+		
+		window.Component=function (selector, style) {
+			this.hello=function() {
+				alert("Hello i'am a component");
+			};
+			this.find=function(selector) {
+				return this.node.querySelectorAll(selector);
+			};
+			this.render=function() {
+				return this.node;
+			};
+			this.node=document.querySelector(selector);
+			if (style instanceof Styles) {
+				this.styles = clone(style);
+				setCss(this.node, this.styles.css);
+			}
+			else {
+				this.styles = new Styles();
+			}
+		};
     
-        // static create
-        createComponent = window.createComponent = function () {
-            return new Component();
-        };
-    
-    
-        Component.prototype.addCss = function ( properties, overwrite ) {
-            if (arguments.length == 1) {
-                overwrite = true;
-            }
-            this.styles.addCss(properties, overwrite);
-            setCss(this.node, this.styles.css);
-        };
-    
-        Component.prototype.clearCss = function ( properties ) {
-            if (arguments.length == 0) {
-                this.styles.clearCss();
-            }
-            else {
-                this.styles.clearCss(properties);
-            }
-            setCss(this.node, this.styles.css);
-        };
-    
-        Component.prototype.newCss = function ( x ) {
-            if (x instanceof Styles) {
-                delete this.styles;
-                this.styles = clone (x);
-                setCss(this.node, this.styles.css);
-            }
-        };
-        function writeCss ( node, properties ) {
-            var key, data = "", count = 0;
-            for (var type in properties) {
-                key = getKey(type);
-                if(key==null) {
-                    continue;
-                }
-                count++;
-            
-                if (properties[type] instanceof Object) {
-                    data += key + ":";
-                    for (var item in properties[type]) {
-                        data += " " + item + "(" +  properties[type][item] + ")";
-                    }
-                    data += "; ";
-                }
-                else {
-                    data += key + ": " + properties[type] + "; ";
-                }
-            }
-            if (count == 0) {
-                node.removeAttribute("style");
-            }
-            else {
-                node.setAttribute("style", data);
-            }
-        };
-
-        // ID / NodeList
-        function setCss ( node, properties ) {
-            if (node instanceof NodeList) {
-                for (var i = 0; i < node.length; i++) {
-                    writeCss(node[i], properties);
-                }
-            }
-            else {
-                writeCss(node, properties);
-            }
-        };
+		createComponent = window.createComponent = function () {
+			return new Component();
+		};
     
     
+		Component.prototype.addCss = function ( properties, overwrite ) {
+			if (arguments.length == 1) {
+				overwrite = true;
+			}
+			this.styles.addCss(properties, overwrite);
+			setCss(this.node, this.styles.css);
+		};
     
-    })(document, window);
+		Component.prototype.clearCss = function ( properties ) {
+			if (arguments.length == 0) {
+				this.styles.clearCss();
+			}
+			else {
+				this.styles.clearCss(properties);
+			}
+			setCss(this.node, this.styles.css);
+		};
     
-    (function ( document, window ) {
+		Component.prototype.newCss = function ( x ) {
+			if (x instanceof Styles) {
+				delete this.styles;
+				this.styles = clone (x);
+				setCss(this.node, this.styles.css);
+			}
+		};
+		
+		function setCss ( node, properties ) {
+			if (node instanceof NodeList) {
+				for (var i = 0; i < node.length; i++) {
+					writeCss(node[i], properties);
+				}
+			}
+			else {
+				writeCss(node, properties);
+			}
+		};
+		
+		function writeCss ( node, properties ) {
+			var key, data = "", count = 0;
+			for (var type in properties) {
+				key = getKey(type);
+				if(key==null) {
+					continue;
+				}
+				count++;
+				if (properties[type] instanceof Object) {
+					data += key + ":";
+					for (var item in properties[type]) {
+						data += " " + item + "(" +  properties[type][item] + ")";
+					}
+					data += "; ";
+				}
+				else {
+					data += key + ": " + properties[type] + "; ";
+				}
+			}
+			if (count == 0) {
+				node.removeAttribute("style");
+			}
+			else {
+				node.setAttribute("style", data);
+			}
+		};
+    
+	})(document, window);
+    
+	(function ( document, window ) {
    
-        var Styles = window.Styles = function () {
-            this.css = {};
-            return this;
-        }
+		var Styles = window.Styles = function () {
+			this.css = {};
+			return this;
+		}
     	
-		// write / overwrite (overwrite=true)
 		Styles.prototype.addCss = function ( properties , overwrite ) {
 			if (arguments.length == 1) {
 				overwrite = true;
@@ -338,44 +340,47 @@
 			}
 		};
     
-        // Print all styles
-        Styles.prototype.showCss = function () {
-            console.log("Style:");
-            for (var type in this.css ) {
-                console.log(type + ": " + this.css[type]);
-                if (this.css[type] instanceof Object) {
-                    for (var type2 in this.css[type]) {
-                        console.log(type2 + ": " + this.css[type][type2]);
-                    }
-                }
-            }		
-        };
+		Styles.prototype.showCss = function () {
+			console.log("Style:");
+			for (var type in this.css ) {
+				console.log(type + ": " + this.css[type]);
+				if (this.css[type] instanceof Object) {
+					for (var type2 in this.css[type]) {
+						console.log(type2 + ": " + this.css[type][type2]);
+					}
+				}
+			}		
+		};
     
-   
+	})(document, window);
+	
+	function getKey ( type ) {
+		for (i=0;i<type.length;i++) {
+			if ((type.charAt(i) >= 'A') && (type.charAt(i) <= 'Z')) {
+				type = type.replace(type.charAt(i), "-"+type.charAt(i).toLowerCase());
+			}
+		}
+		var typeSmall = type.toLowerCase();
+		var typeSmallWithPrefix = zinInfo.browser() + typeSmall;
+		if (  document.querySelector("body").style[typeSmallWithPrefix] !== undefined ) {
+			return typeSmallWithPrefix;
+		}
+		else if (  document.querySelector("body").style[typeSmall] !== undefined ) { //useless? browser can be ""
+			return typeSmall;
+		}
+		console.log(type.toString() + " is undefined in this browser");
+		return null;
+	};
     
-    })(document, window);
-    function getKey ( type ) {
-        var typeSmall = type.toLowerCase();
-        var typeSmallWithPrefix = zinInfo.browser() + typeSmall;
-        if (  document.querySelector("body").style[typeSmallWithPrefix] !== undefined ) {
-            return typeSmallWithPrefix;
-        }
-        else if (  document.querySelector("body").style[typeSmall] !== undefined ) { //useless? browser can be ""
-            return typeSmall;
-        }
-        console.log(type.toString() + " is undefined in this browser");
-        return null;
-    };
-    
-    //copy constructor for style
-    function clone (object) {
-        if (object == null || typeof(object) != 'object') {
-            return object;    
-        }
-        var temp = new object.constructor(); 
-        for (var key in object) {
-            temp[key] = clone(object[key]);    
-        }
-        return temp;
-    }
+	function clone (object) {
+		if (object == null || typeof(object) != 'object') {
+			return object;    
+		}
+		var temp = new object.constructor(); 
+		for (var key in object) {
+			temp[key] = clone(object[key]);    
+		}
+		return temp;
+	}
+	
 })(document, window);

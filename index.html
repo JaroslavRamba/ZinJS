@@ -77,7 +77,8 @@
                         rotate: "60deg",
                         translate: "20px, 50px"
                     },
-                    transition: "all 1s linear 0"
+                    transition: "all 1s linear 0",
+					transitionDelay: "2s"
                 });
                 styly.addCss({
                     left: "300px"
@@ -98,7 +99,7 @@
                 //obrazek.zoom(100);
                 window.obr=obrazek;
                
-               
+			   var styleInside = new Component("#styleInsideConstructor", styly);
                 var sirka = new Component("#width");
                 var vyska = new Component("#height");
                 var test = new Component("#test");
@@ -151,6 +152,7 @@
         <p id="height" class="demo"></p>
         <p id="browser" class="demo"></p>
         <p id="test" class="demo">TEST</p>
+		<p id="styleInsideConstructor">styl uvnitr konstruktoru</p>
         <p id="druhy" class="demo">DRUHY</p>
         <div id="treti">TRETI</div>
         <div id="cc">Klikni na obrazek <br/><img id="obrazek" onclick="obrazekzoom()" src="https://lh5.googleusercontent.com/-q9ZTSVPT784/T2HriCuR1QI/AAAAAAAAAMU/1d3P-Lpl2WA/s770/IMG_20120315_141523.jpg" /></div>
