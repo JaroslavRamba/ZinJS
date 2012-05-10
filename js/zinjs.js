@@ -1,10 +1,11 @@
 (function ( document, window ) {
-    function isFunction(o)
-    {
+	
+    function isFunction(o) {
         return typeof(o)=="function"; //useless function
     }
-    window.zinCore={
-        loadPlugin: function(pluginName){
+	
+    window.zinCore = {
+        loadPlugin: function(pluginName) {
             var xmlhttp=false;
             /*@cc_on @*/
             /*@if (@_jscript_version >= 5)
@@ -55,8 +56,9 @@
                     }
                     zinInfo.addPlugin(tmpZinPluginInfo);
                 }
-                //info about else??
+            //info about else??
             }
+			
             function onLoaded(data) {
                 var object=eval(data);
                 if(object==undefined)return; //merge this and next condition
@@ -69,24 +71,26 @@
                     addZinPlugin(object);
                 }
             }
+			
             xmlhttp.onreadystatechange=function() {
                 if (xmlhttp.readyState==4) {
                     onLoaded(xmlhttp.responseText);
                 }
             }
+			
             xmlhttp.open("GET",pluginName+".js",false);
             xmlhttp.send();
         }
     }
 
-    window.zinInfo={
+    window.zinInfo = {
         width: $(window).width(),
         height: $(window).height(),
         plugins: new Array(),
-        getSize: function(){
+        getSize: function() {
             return [$(window).width(),$(window).height()]; 
         },
-        isMobile: function(){
+        isMobile: function() {
             if( navigator.userAgent.match(/Android/i)
                 || navigator.userAgent.match(/iPhone/i)
                 || navigator.userAgent.match(/iPad/i)
@@ -98,7 +102,7 @@
             }
             return false;
         },
-        addPlugin: function(data){
+        addPlugin: function(data) {
             if(data instanceof(ZinPluginInfo))
             {
                 this.plugins.push(data);
@@ -106,7 +110,7 @@
             }
             return false;
         },
-        isExistsPlugin: function(data){
+        isExistsPlugin: function(data) {
             if(data instanceof(ZinPluginInfo))
             {
                 for (var plugin in this.plugins) 
@@ -129,26 +133,23 @@
                     return ("-" + result.substr(0,result.search("Transform")).toLowerCase() + "-");
                 }
             }
-
             return "";
-        
         }
     }
 
-    function ZinPluginInfo(name, path, type){
+    function ZinPluginInfo(name, path, type) {
         this.name =  name;
         this.path = path;
         this.type = type;
-        this.equals = function(data){ 
-            if(data instanceof(ZinPluginInfo))
-            {
-                if(data.name!=this.name){
+        this.equals = function(data) { 
+            if(data instanceof(ZinPluginInfo)) {
+                if(data.name!=this.name) {
                     return false;
                 }
-                if(data.path!=this.path){
+                if(data.path!=this.path) {
                     return false;
                 }
-                if(data.type!=this.type){
+                if(data.type!=this.type) {
                     return false;
                 }
                 return true;
@@ -156,26 +157,26 @@
             return false;
         };
     }
-    var ZinPluginType={
+	
+    var ZinPluginType = {
         Event:"event",
         Action:"action",
         Component:"component"
     }
-    function ZinPluginPrototype(name,type,content)
-    {
+	
+    function ZinPluginPrototype(name,type,content) {
         this.type=type;
         this.name=name;
         this.content=content;
     }
     
-    
 })(document, window);
 
 (function ( document, window ) {
     (function ( document, window ) {
-        window.Component=function (selector)
-        {
-            this.hello=function(){
+		
+        window.Component=function (selector, style) {
+            this.hello=function() {
                 alert("Hello i'am a component");
             };
             this.find=function(selector) {
@@ -185,10 +186,15 @@
                 return this.node;
             };
             this.node=document.querySelector(selector);
-            this.styles = new Styles();
+            if (style instanceof Styles) {
+                this.styles = clone(style);
+                setCss(this.node, this.styles.css);
+            }
+            else {
+                this.styles = new Styles();
+            }
         };
     
-        // static create
         createComponent = window.createComponent = function () {
             return new Component();
         };
@@ -219,6 +225,18 @@
                 setCss(this.node, this.styles.css);
             }
         };
+		
+        function setCss ( node, properties ) {
+            if (node instanceof NodeList) {
+                for (var i = 0; i < node.length; i++) {
+                    writeCss(node[i], properties);
+                }
+            }
+            else {
+                writeCss(node, properties);
+            }
+        };
+		
         function writeCss ( node, properties ) {
             var key, data = "", count = 0;
             for (var type in properties) {
@@ -227,7 +245,6 @@
                     continue;
                 }
                 count++;
-            
                 if (properties[type] instanceof Object) {
                     data += key + ":";
                     for (var item in properties[type]) {
@@ -246,20 +263,6 @@
                 node.setAttribute("style", data);
             }
         };
-
-        // ID / NodeList
-        function setCss ( node, properties ) {
-            if (node instanceof NodeList) {
-                for (var i = 0; i < node.length; i++) {
-                    writeCss(node[i], properties);
-                }
-            }
-            else {
-                writeCss(node, properties);
-            }
-        };
-    
-    
     
     })(document, window);
     
@@ -270,75 +273,73 @@
             return this;
         }
     	
-		// write / overwrite (overwrite=true)
-		Styles.prototype.addCss = function ( properties , overwrite ) {
-			if (arguments.length == 1) {
-				overwrite = true;
-			}
-			for (var type in properties ) {
-				if (properties[type] instanceof Object) {
-					if (!this.css[type]) {
-						this.css[type] = properties[type];
-					}
-					for (var item in properties[type]) {
-						if (overwrite || !this.css[type][item]) {
-							this.css[type][item] = properties[type][item];
-						}
-						else {
-							console.log(type.toString() + " " + item.toString() + " not rewritable");
-						}
-					}
-				}
-				else if (getKey (type)) {
-					if (!this.css[type]) {
-						this.css[type] = properties[type];
-					}
-					else {
-						if (overwrite) {
-							this.css[type] = properties[type];
-						}
-						else {
-							console.log(type.toString() + " not rewritable");
-						}
-					}
-				}
-			}
-		};
+        Styles.prototype.addCss = function ( properties , overwrite ) {
+            if (arguments.length == 1) {
+                overwrite = true;
+            }
+            for (var type in properties ) {
+                if (properties[type] instanceof Object) {
+                    if (!this.css[type]) {
+                        this.css[type] = properties[type];
+                    }
+                    for (var item in properties[type]) {
+                        if (overwrite || !this.css[type][item]) {
+                            this.css[type][item] = properties[type][item];
+                        }
+                        else {
+                            console.log(type.toString() + " " + item.toString() + " not rewritable");
+                        }
+                    }
+                }
+                else if (getKey (type)) {
+                    if (!this.css[type]) {
+                        this.css[type] = properties[type];
+                    }
+                    else {
+                        if (overwrite) {
+                            this.css[type] = properties[type];
+                        }
+                        else {
+                            console.log(type.toString() + " not rewritable");
+                        }
+                    }
+                }
+            }
+        };
     
-		Styles.prototype.clearCss = function ( properties ) {
-			var type;
-			if (arguments.length == 0) {
-				for (type in this.css ) {
-					delete this.css[type];
-				}
-			}
-			else if (arguments.length == 1) {
-				if (typeof(properties) === 'string' || s instanceof String) {
-					properties = new Array(properties);
-				}
-				for (type in properties ) {
-					var inside = properties[type].split("-");
-					if (this.css[inside[0]]) {
-						if (inside.length == 1) {
-							delete this.css[inside[0]];
-						}
-						else if (inside.length == 2) {
-							if (this.css[inside[0]][inside[1]]) {
-								delete this.css[inside[0]][inside[1]];
-							}
-							if (this.css[inside[0]].length == 0) { //useless?
-								delete this.css[inside[0]];
-							}
-						}
-					}
-				}
-			}
-			else{
-				console.log("Styles clearCss has bad parameters");
-			}
-		};
+        Styles.prototype.clearCss = function ( properties ) {
+            var type;
+            if (arguments.length == 0) {
+                for (type in this.css ) {
+                    delete this.css[type];
+                }
+            }
+            else if (arguments.length == 1) {
+                if (typeof(properties) === 'string' || s instanceof String) {
+                    properties = new Array(properties);
+                }
+                for (type in properties ) {
+                    var inside = properties[type].split("-");
+                    if (this.css[inside[0]]) {
+                        if (inside.length == 1) {
+                            delete this.css[inside[0]];
+                        }
+                        else if (inside.length == 2) {
+                            if (this.css[inside[0]][inside[1]]) {
+                                delete this.css[inside[0]][inside[1]];
+                            }
+                            if (this.css[inside[0]].length == 0) { //useless?
+                                delete this.css[inside[0]];
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                console.log("Styles clearCss has bad parameters");
+            }
+        };
     
-        // Print all styles
         Styles.prototype.showCss = function () {
             console.log("Style:");
             for (var type in this.css ) {
@@ -351,10 +352,14 @@
             }		
         };
     
-   
-    
     })(document, window);
+	
     function getKey ( type ) {
+        for (i=0;i<type.length;i++) {
+            if ((type.charAt(i) >= 'A') && (type.charAt(i) <= 'Z')) {
+                type = type.replace(type.charAt(i), "-"+type.charAt(i).toLowerCase());
+            }
+        }
         var typeSmall = type.toLowerCase();
         var typeSmallWithPrefix = zinInfo.browser() + typeSmall;
         if (  document.querySelector("body").style[typeSmallWithPrefix] !== undefined ) {
@@ -367,7 +372,6 @@
         return null;
     };
     
-    //copy constructor for style
     function clone (object) {
         if (object == null || typeof(object) != 'object') {
             return object;    
@@ -378,4 +382,5 @@
         }
         return temp;
     }
+	
 })(document, window);
