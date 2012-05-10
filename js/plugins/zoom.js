@@ -14,7 +14,7 @@ new ZinPluginPrototype("zoom",ZinPluginType.Action,function(percent){
             container.style.width=node.width;
         }
         else
-             container.style.width=node.style.width;
+            container.style.width=node.style.width;
        
         if(node.style.height==undefined||node.style.height=="")
         {
@@ -22,9 +22,9 @@ new ZinPluginPrototype("zoom",ZinPluginType.Action,function(percent){
             container.style.height=node.height;
         }
         else
-           container.style.height=node.style.height;
+            container.style.height=node.style.height;
     }
-     this.addCss({
+    this.addCss({
         transform: {
             scale: "1"
         },
