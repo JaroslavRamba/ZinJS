@@ -7,12 +7,12 @@
         <style>
 
             @-webkit-keyframes rotating {
-                from{
-                -webkit-transform: rotate(0deg);
-            }
-            to{
-                -webkit-transform: rotate(360deg);
-            }
+                from {
+                    -webkit-transform: rotate(0deg);
+                }
+                to {
+                    -webkit-transform: rotate(360deg);
+                }
             }
 
         </style>
@@ -27,7 +27,6 @@
                 }
                 else
                 {
-                            
                     obr.tempzoom=1
                     obr.zoom(200);
                 }
@@ -36,28 +35,24 @@
                 zinCore.loadPlugin("js/plugins/testplugin");
                 zinCore.loadPlugin("js/plugins/rotate");
                 zinCore.loadPlugin("js/plugins/zoom");
+
                 s = new Scroll();
                 c = new createComponent();
-            
+
                 widthcomp=new Component("#width");
-                                
                 widthcomp.rotate();
-                
-                
                 widthcomp.render().innerHTML="sirka: "+zinInfo.width+"px";
-                
+
                 heightcomp=new Component("#height");
                 heightcomp.node.innerHTML="vyska: "+zinInfo.height+"px";
-                
-                browsercomp=new Component("#browser");
-                browsercomp.node.innerHTML="predpona browseru: "+zinInfo.browser()+"px";
-                
-			
+
                 // styly = new Styles();
                 // .add({css properties}, overwrite); // overwrite = true/false
                 // .clear() // smazani celeho stylu
                 // .clear(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+
                 var styly = new Styles();
+
                 styly.addCss({
                     position: "absolute",
                     top: "100px",
@@ -66,16 +61,18 @@
                         rotate: "60deg",
                         translate: "20px, 50px"
                     },
-                    transition: "all 1s linear 0",
+                    transition: "all 1s linear 0s",
                     transitionDelay: "2s"
                 });
+
                 styly.addCss({
                     left: "300px"
                 });
+
                 //styly.clear();
                 //styly.clear(["left","transform-translate"]);
-			
-			
+
+
                 // kontejner = new Element("prvek");
                 // ID - $id
                 // CLASS - $all
@@ -84,33 +81,28 @@
                 // .newCss(Styles); --> dle jiz vytvoreneho stylu
                 // .addCss({css properties}, overwrite); // overwrite = true/false
                 // .clearCss(["position","left","transform-scale"]) // smazani jednotlivych vlastnosti
+
                 var obrazek = new Component("#obrazek");
+
                 //obrazek.zoom(100);
+
                 window.obr=obrazek;
-               
+
                 var styleInside = new Component("#styleInsideConstructor", styly);
                 var sirka = new Component("#width");
                 var vyska = new Component("#height");
                 var test = new Component("#test");
                 var druhy = new Component("#druhy");
-                var browser = new Component("#browser");
                 var allDemos = new Component(".demo");
                 var allDives = new Component("div");
                 var pokus = createComponent("body");
                 var treti = createComponent("#treti");
-            
-                test.newCss(styly);   
-                browser.newCss(styly);
+
+                test.newCss(styly);
                 vyska.newCss(styly);
-                browser.addCss({
-                    left: "250px"
-                }, true);
                 vyska.clearCss(["transform-translate"]);
                 styly.clearCss(["transform-translate"]);
                 test.newCss(styly);
-                browser.addCss({
-                    top: "150px"
-                });
                 test.addCss({
                     position: "absolute",
                     left: "500px"
@@ -131,8 +123,8 @@
                         scale: 2,
                         rotate: "120deg"
                     }
-                }, false);	
-                
+                }, false);
+
                 test.clearCss(["transform-rotate"]);
                 //test.rotate();
                 //test.rotate(180);
@@ -145,7 +137,6 @@
     <body>
         <p id="width" class="demo" style="display: block; height: 50px;width: 50px; color:blue"></p>
         <p id="height" class="demo"></p>
-        <p id="browser" class="demo"></p>
         <p id="test" class="demo">TEST</p>
         <p id="styleInsideConstructor">styl uvnitr konstruktoru</p>
         <p id="druhy" class="demo">DRUHY</p>
