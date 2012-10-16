@@ -1,0 +1,40 @@
+body {
+    font-family: 'Averia Libre', cursive;
+}
+
+a {
+    color: silver;
+    text-decoration: none;
+}
+
+a:hover {
+    color: silver;
+    text-decoration: underline;
+}
+
+#logo {
+    position: absolute;
+    left: 100px;
+    top: 50px;
+}
+
+h1 {
+    color: Green;
+}
+
+#box {
+    position: absolute;
+    top: 50px;
+    left: 630px;
+    width: 400px;
+    height: 400px;
+}
+
+#copy {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    color: silver;
+    position: relative;
+    text-align: center;
+    margin-top: 600px;
+}

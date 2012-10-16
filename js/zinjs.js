@@ -1,389 +1,408 @@
-(function ( document, window ) {
+zinjs = {
+    core: {},
+    info: {},
+    util: {}
+};
 
-    function isFunction(o) {
-        return typeof(o)=="function"; // useless function
-    }
+/////////////////////////////////////////////////////////////////////////////////////////
+// core //////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
-    window.zinCore = {
-        loadPlugin: function(pluginName) {
-            var xmlhttp=false;
-            /*@cc_on @*/
-            /*@if (@_jscript_version >= 5)
-            try {
-                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (E) {
-                    xmlhttp = false;
-                }
-            }
-            @end @*/
-            if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-                try {
-                    xmlhttp = new XMLHttpRequest();
-                } catch (e) {
-                    xmlhttp=false;
-                    console.log(e);
-                }
-            }
-            if (!xmlhttp && window.createRequest) {
-                try {
-                    xmlhttp = window.createRequest();
-                } catch (e) {
-                    xmlhttp=false;
-                    console.log(e);
-                }
-            }
-            if(!xmlhttp)
-                console.log("Sorry XMLHttpRequest is not implemented.");
+zinjs.core.plugins = [];
 
-            function addZinPlugin(zinPlugin) {
-                var tmpZinPluginInfo=new ZinPluginInfo(zinPlugin.name, "", zinPlugin.type);
-                if(!zinInfo.isExistsPlugin(tmpZinPluginInfo)) {
-                    switch(zinPlugin.type)
-                    {
-                        case ZinPluginType.Action:
-                            eval("Component.prototype."+zinPlugin.name+"=zinPlugin.content");
-                            break;
-                        case ZinPluginType.Component:
-                            eval(zinPlugin.content.name+"=zinPlugin.content");
-                            zinPlugin.content.prototype=new Component();
-                            break;
-                        case ZinPluginType.Event:
-                            eval("Component.prototype."+zinPlugin.name+"=null");
-                            eval(zinPlugin.content+"(Component.prototype)");
-                            break;
-                    }
-                    zinInfo.addPlugin(tmpZinPluginInfo);
-                }
-                // info about else??
-            }
+zinjs.core.pluginType = {
+    EVENT: "event",
+    ACTION: "action",
+    COMPONENT: "component"
+};
 
-            function onLoaded(data) {
-                var object = eval(data);
-                if(object === undefined)
-                    return; // merge this and next condition
-                if(!(object instanceof Object))
-                    return;
-                if(object instanceof Array) {
-                    for (var key in object) {
-                        addZinPlugin(object[key]); // where is condition with if(object instanceof ZinPluginPrototype) ??
-                    }
-                } else if(object instanceof ZinPluginPrototype) {
-                    addZinPlugin(object);
-                }
-            }
+zinjs.core.PluginPrototype = function(name, type, content)
+{
+    this.name = name;
+    this.type = type;
+    this.content = content;
+};
 
-            xmlhttp.onreadystatechange=function() {
-                if (xmlhttp.readyState==4) {
-                    onLoaded(xmlhttp.responseText);
-                }
-            };
-
-            xmlhttp.open("GET",pluginName+".js",false);
-            xmlhttp.send();
-        }
-    };
-
-    window.zinInfo = {
-        width: $(window).width(),
-        height: $(window).height(),
-        plugins: [],
-        getSize: function() {
-            return [$(window).width(),$(window).height()];
-        },
-        isMobile: function() {
-            if( navigator.userAgent.match(/Android/i)
-                || navigator.userAgent.match(/iPhone/i)
-                || navigator.userAgent.match(/iPad/i)
-                || navigator.userAgent.match(/iPod/i)
-                || navigator.userAgent.match(/webOS/i)
-                || navigator.userAgent.match(/BlackBerry/i)
-                ){
-                return true;
-            }
-            return false;
-        },
-        addPlugin: function(data) {
-            if(data instanceof(ZinPluginInfo))
-            {
-                this.plugins.push(data);
-                return true;
-            }
-            return false;
-        },
-        isExistsPlugin: function(data) {
-            if(data instanceof(ZinPluginInfo))
-            {
-                for (var plugin in this.plugins)
-                {
-                    if(this.plugins[plugin].equals(data)) {
-                        return true;
-                    }
-                }
+zinjs.core.isPluginLoaded = function(plugin)
+{
+    function compare(plugin1, plugin2)
+    {
+        if (plugin1 instanceof(zinjs.core.PluginPrototype) && plugin2 instanceof(zinjs.core.PluginPrototype)) {
+            if (plugin1.name !== plugin2.name) {
                 return false;
             }
+            if (plugin1.type !== plugin2.type) {
+                return false;
+            }
+            return true;
         }
-    };
+        return false;
+    }
 
-    function ZinPluginInfo(name, path, type) {
-        this.name = name;
-        this.path = path;
-        this.type = type;
-        this.equals = function(data) {
-            if(data instanceof(ZinPluginInfo)) {
-                if(data.name!=this.name) {
-                    return false;
-                }
-                if(data.path!=this.path) {
-                    return false;
-                }
-                if(data.type!=this.type) {
-                    return false;
-                }
+    if (plugin instanceof(zinjs.core.PluginPrototype)) {
+        for (var i in zinjs.core.plugins) {
+            if (compare(zinjs.core.plugins[i], plugin)) {
+                console.log("Plugin '" + plugin.name + "' already exists.");
                 return true;
             }
-            return false;
-        };
+        }
+        return false;
+    }
+};
+
+zinjs.core.loadPlugin =  function(pluginPath)
+{
+    var xmlhttp = false;
+
+    /*@cc_on @*/
+    /*@if (@_jscript_version >= 5)
+    try {
+        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e) {
+        try {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (E) {
+            xmlhttp = false;
+        }
+    }
+    @end @*/
+
+    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+        try {
+            xmlhttp = new XMLHttpRequest();
+        } catch (e) {
+            xmlhttp=false;
+            console.log(e);
+        }
     }
 
-    var ZinPluginType = {
-        Event:"event",
-        Action:"action",
-        Component:"component"
+    if (!xmlhttp && window.createRequest) {
+        try {
+            xmlhttp = window.createRequest();
+        } catch (e) {
+            xmlhttp = false;
+            console.log(e);
+        }
+    }
+
+    if (!xmlhttp)
+        console.log("Sorry XMLHttpRequest is not implemented.");
+
+    function addPlugin(plugin)
+    {
+        if (plugin instanceof zinjs.core.PluginPrototype && !zinjs.core.isPluginLoaded(plugin)) {
+            switch(plugin.type) {
+                case zinjs.core.pluginType.ACTION:
+                    eval("zinjs.Component.prototype." + plugin.name + " = plugin.content");
+                    break;
+                case zinjs.core.pluginType.COMPONENT:
+                    eval(plugin.content.name + " = plugin.content");
+                    plugin.content.prototype = new zinjs.Component();
+                    break;
+                case zinjs.core.pluginType.EVENT:
+                    eval("zinjs.Component.prototype." + plugin.name + " = null");
+                    eval(plugin.content + "(zinjs.Component.prototype)");
+                    break;
+            }
+            zinjs.core.plugins.push(plugin);
+        }
+    }
+
+    function onReceive(pluginData)
+    {
+        var data = eval(pluginData);
+        if (data === undefined || !(data instanceof Object)) {
+            return;
+        }
+        else if (data instanceof Array) {
+            for (var i in data) {
+                addPlugin(data[i]);
+            }
+        }
+        else {
+            addPlugin(data);
+        }
+    }
+
+    xmlhttp.onreadystatechange = function()
+    {
+        if (xmlhttp.readyState == 4) {
+            onReceive(xmlhttp.responseText);
+        }
     };
 
-    function ZinPluginPrototype(name,type,content) {
-        this.type=type;
-        this.name=name;
-        this.content=content;
+    xmlhttp.open("GET", pluginPath+".js", false);
+    xmlhttp.send();
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// info /////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+zinjs.info.width = $(window).width();
+
+zinjs.info.height = $(window).height();
+
+zinjs.info.isMobile = (function()
+{
+    if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/BlackBerry/i)) {
+        return true;
     }
+    return false;
+})();
 
-})(document, window);
+/////////////////////////////////////////////////////////////////////////////////////////
+// Component ////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
-(function ( document, window ) {
-    (function ( document, window ) {
+zinjs.Component = function(selector, style)
+{
+    this.node = document.querySelectorAll(selector);
+    if (style instanceof zinjs.Styles) {
+        this.styles = zinjs.util.clone(style);
+        zinjs.util.setCss(this.node, this.styles.css);
+    } else {
+        this.styles = new zinjs.Styles();
+    }
+};
 
-        window.Component=function (selector, style) {
-            this.hello=function() {
-                alert("Hello i'am a component");
-            };
-            this.find=function(selector) {
-                return this.node.querySelectorAll(selector);
-            };
-            this.render=function() {
-                return this.node;
-            };
-            this.node=document.querySelector(selector);
-            if (style instanceof Styles) {
-                this.styles = clone(style);
-                setCss(this.node, this.styles.css);
+zinjs.createComponent = function(selector, style)
+{
+    return new zinjs.Component(selector, style);
+};
+
+zinjs.Component.prototype.hello = function()
+{
+    alert("Hello i'am a zinjs.Component");
+    return this;
+};
+
+zinjs.Component.prototype.find = function(selector)
+{
+    return this.node.querySelectorAll(selector);
+};
+
+zinjs.Component.prototype.render = function()
+{
+    return this.node;
+};
+
+zinjs.Component.prototype.addCss = function(properties, overwrite)
+{
+    if (arguments.length == 1) {
+        overwrite = true;
+    }
+    this.styles.addCss(properties, overwrite);
+    zinjs.util.setCss(this.node, this.styles.css);
+    return this;
+};
+
+zinjs.Component.prototype.clearCss = function(properties)
+{
+    if (arguments.length === 0) {
+        this.styles.clearCss();
+    }
+    else {
+        this.styles.clearCss(properties);
+    }
+    zinjs.util.setCss(this.node, this.styles.css);
+    return this;
+};
+
+zinjs.Component.prototype.newCss = function(x)
+{
+    if (x instanceof zinjs.Styles) {
+        delete this.styles;
+        this.styles = zinjs.util.clone (x);
+        zinjs.util.setCss(this.node, this.styles.css);
+    }
+    return this;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Styles ///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+zinjs.Styles = function()
+{
+    this.css = {};
+};
+
+zinjs.Styles.prototype.addCss = function(properties , overwrite)
+{
+    if (arguments.length == 1) {
+        overwrite = true;
+    }
+    for (var type in properties) {
+        if (properties[type] instanceof Object) {
+            if (!this.css[type]) {
+                this.css[type] = properties[type];
             }
-            else {
-                this.styles = new Styles();
-            }
-        };
-
-        createComponent = window.createComponent = function () {
-            return new Component();
-        };
-
-
-        Component.prototype.addCss = function ( properties, overwrite ) {
-            if (arguments.length == 1) {
-                overwrite = true;
-            }
-            this.styles.addCss(properties, overwrite);
-            setCss(this.node, this.styles.css);
-        };
-
-        Component.prototype.clearCss = function ( properties ) {
-            if (arguments.length === 0) {
-                this.styles.clearCss();
-            }
-            else {
-                this.styles.clearCss(properties);
-            }
-            setCss(this.node, this.styles.css);
-        };
-
-        Component.prototype.newCss = function ( x ) {
-            if (x instanceof Styles) {
-                delete this.styles;
-                this.styles = clone (x);
-                setCss(this.node, this.styles.css);
-            }
-        };
-
-        function setCss ( node, properties ) {
-            if (node instanceof NodeList) {
-                for (var i = 0; i < node.length; i++) {
-                    writeCss(node[i], properties);
-                }
-            }
-            else {
-                writeCss(node, properties);
-            }
-        }
-
-        function writeCss ( node, properties ) {
-            var key, data = "", count = 0;
-            for (var type in properties) {
-                key = getKey(type);
-                if(key === null) {
-                    console.log(type.toString() + " is undefined in this browser");
-                    continue;
-                }
-                count++;
-                if (properties[type] instanceof Object) {
-                    data += key + ":";
-                    for (var item in properties[type]) {
-                        data += " " + item + "(" +  properties[type][item] + ")";
-                    }
-                    data += "; ";
+            for (var item in properties[type]) {
+                if (overwrite || !this.css[type][item]) {
+                    this.css[type][item] = properties[type][item];
                 }
                 else {
-                    data += key + ": " + properties[type] + "; ";
+                    console.log(type.toString() + " " + item.toString() + " not rewritable");
                 }
             }
-            if (count === 0) {
-                node.removeAttribute("style");
+        }
+        else if (zinjs.util.getKey (type)) {
+            if (!this.css[type]) {
+                this.css[type] = properties[type];
             }
             else {
-                node.setAttribute("style", data);
+                if (overwrite) {
+                    this.css[type] = properties[type];
+                }
+                else {
+                    console.log(type.toString() + " not rewritable");
+                }
             }
         }
+    }
+    return this;
+};
 
-    })(document, window);
-
-    (function ( document, window ) {
-
-        var Styles = window.Styles = function () {
-            this.css = {};
-            return this;
-        };
-
-        Styles.prototype.addCss = function ( properties , overwrite ) {
-            if (arguments.length == 1) {
-                overwrite = true;
-            }
-            for (var type in properties ) {
-                if (properties[type] instanceof Object) {
-                    if (!this.css[type]) {
-                        this.css[type] = properties[type];
-                    }
-                    for (var item in properties[type]) {
-                        if (overwrite || !this.css[type][item]) {
-                            this.css[type][item] = properties[type][item];
-                        }
-                        else {
-                            console.log(type.toString() + " " + item.toString() + " not rewritable");
-                        }
-                    }
+zinjs.Styles.prototype.clearCss = function(properties)
+{
+    var type;
+    if (arguments.length === 0) {
+        for (type in this.css) {
+            delete this.css[type];
+        }
+    }
+    else if (arguments.length == 1) {
+        if (typeof(properties) === 'string' || properties instanceof String) {
+            properties = new Array(properties);
+        }
+        for (type in properties) {
+            var inside = properties[type].split("-");
+            if (this.css[inside[0]]) {
+                if (inside.length == 1) {
+                    delete this.css[inside[0]];
                 }
-                else if (getKey (type)) {
-                    if (!this.css[type]) {
-                        this.css[type] = properties[type];
+                else if (inside.length == 2) {
+                    if (this.css[inside[0]][inside[1]]) {
+                        delete this.css[inside[0]][inside[1]];
                     }
-                    else {
-                        if (overwrite) {
-                            this.css[type] = properties[type];
-                        }
-                        else {
-                            console.log(type.toString() + " not rewritable");
-                        }
+                    if (this.css[inside[0]].length === 0) {
+                        delete this.css[inside[0]];
                     }
                 }
-            }
-        };
-
-        Styles.prototype.clearCss = function ( properties ) {
-            var type;
-            if (arguments.length === 0) {
-                for (type in this.css ) {
-                    delete this.css[type];
-                }
-            }
-            else if (arguments.length == 1) {
-                if (typeof(properties) === 'string' || s instanceof String) {
-                    properties = new Array(properties);
-                }
-                for (type in properties ) {
-                    var inside = properties[type].split("-");
-                    if (this.css[inside[0]]) {
-                        if (inside.length == 1) {
-                            delete this.css[inside[0]];
-                        }
-                        else if (inside.length == 2) {
-                            if (this.css[inside[0]][inside[1]]) {
-                                delete this.css[inside[0]][inside[1]];
-                            }
-                            if (this.css[inside[0]].length === 0) {
-                                delete this.css[inside[0]];
-                            }
-                        }
-                    }
-                }
-            }
-            else{
-                console.log("Styles clearCss has bad parameters");
-            }
-        };
-
-        Styles.prototype.showCss = function () {
-            console.log("Style:");
-            for (var type in this.css ) {
-                console.log(type + ": " + this.css[type]);
-                if (this.css[type] instanceof Object) {
-                    for (var type2 in this.css[type]) {
-                        console.log(type2 + ": " + this.css[type][type2]);
-                    }
-                }
-            }
-        };
-
-    })(document, window);
-
-    function camelToDash ( type ) {
-        for (i=0;i<type.length;i++) {
-            if ((type.charAt(i) >= 'A') && (type.charAt(i) <= 'Z')) {
-                type = type.replace(type.charAt(i), "-"+type.charAt(i).toLowerCase());
             }
         }
-        return type;
+    }
+    else {
+        console.log("zinjs.Styles clearCss has bad parameters");
+    }
+    return this;
+};
+
+zinjs.Styles.prototype.showCss = function()
+{
+    console.log("Style:");
+    for (var type in this.css) {
+        console.log(type + ": " + this.css[type]);
+        if (this.css[type] instanceof Object) {
+            for (var type2 in this.css[type]) {
+                console.log(type2 + ": " + this.css[type][type2]);
+            }
+        }
+    }
+    return this;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// utilities ////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+zinjs.util.getKey = (function()
+{
+    var style = document.createElement('dummy').style,
+        prefixes = 'Webkit Moz O ms Khtml'.split(' '),
+        memory = {};
+
+    return function(prop) {
+        if ( typeof memory[ prop ] === "undefined") {
+            var ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
+                props   = (prop + ' ' + prefixes.join(ucProp + ' ') + ucProp).split(' ');
+            memory[ prop ] = null;
+            for ( var i in props) {
+                if ( style[ props[i] ] !== undefined) {
+                    memory[ prop ] = zinjs.util.camelToDash(props[i]);
+                    break;
+                }
+            }
+        }
+        return memory[ prop ];
+    };
+})();
+
+zinjs.util.camelToDash = function(type)
+{
+    for (i=0;i<type.length;i++) {
+        if ((type.charAt(i) >= 'A') && (type.charAt(i) <= 'Z')) {
+            type = type.replace(type.charAt(i), "-"+type.charAt(i).toLowerCase());
+        }
+    }
+    return type;
+};
+
+zinjs.util.clone = function(object)
+{
+    if (object === null || typeof(object) != 'object') {
+        return object;
     }
 
-    var getKey = (function () {
-        var style = document.createElement('dummy').style,
-            prefixes = 'Webkit Moz O ms Khtml'.split(' '),
-            memory = {};
+    var temp = new object.constructor();
 
-        return function ( prop ) {
-            if ( typeof memory[ prop ] === "undefined" ) {
-                var ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
-                    props   = (prop + ' ' + prefixes.join(ucProp + ' ') + ucProp).split(' ');
-                memory[ prop ] = null;
-                for ( var i in props ) {
-                    if ( style[ props[i] ] !== undefined ) {
-                        memory[ prop ] = camelToDash(props[i]);
-                        break;
-                    }
-                }
-            }
-            return memory[ prop ];
-        };
-    })();
-
-    function clone (object) {
-        if (object === null || typeof(object) != 'object') {
-            return object;
-        }
-        var temp = new object.constructor();
-        for (var key in object) {
-            temp[key] = clone(object[key]);
-        }
-        return temp;
+    for (var key in object) {
+        temp[key] = zinjs.util.clone(object[key]);
     }
 
-})(document, window);
+    return temp;
+};
+
+zinjs.util.setCss = function(node, properties)
+{
+    function writeCss(node, properties)
+    {
+        var key, data = "", count = 0;
+        for (var type in properties) {
+            key = zinjs.util.getKey(type);
+            if (key === null) {
+                console.log(type.toString() + " is undefined in this browser");
+                continue;
+            }
+            count++;
+            if (properties[type] instanceof Object) {
+                data += key + ":";
+                for (var item in properties[type]) {
+                    data += " " + item + "(" +  properties[type][item] + ")";
+                }
+                data += "; ";
+            }
+            else {
+                data += key + ": " + properties[type] + "; ";
+            }
+        }
+        if (count === 0) {
+            node.removeAttribute("style");
+        }
+        else {
+            node.setAttribute("style", data);
+        }
+    }
+
+    if (node instanceof NodeList) {
+        for (var i = 0; i < node.length; i++) {
+            writeCss(node[i], properties);
+        }
+    }
+    else {
+        writeCss(node, properties);
+    }
+};
+
+
