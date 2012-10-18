@@ -164,7 +164,7 @@ zinjs.info.isMobile = (function()
     return false;
 })();
 
-zinjs.info.zoomLevel = 1;
+zinjs.info.zoomArea = null;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // AbstractComponent ////////////////////////////////////////////////////////////////////
@@ -317,18 +317,70 @@ zinjs.createContainer = function(selector, style)
 // ZoomArea /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO
+// DOING - EXPERIMENTALNI
 
-zinjs.ZoomArea = function(selector, style)
+zinjs.ZoomArea = function(id, style)
 {
-    zinjs.AbstractComponent.call(this, selector, style);
+    zinjs.AbstractComponent.call(this, id, style);
+    this._elem = this._node.get(0);
+    this._active = false;
 };
 
 zinjs.ZoomArea.extend(zinjs.AbstractComponent);
 
-zinjs.createZoomArea = function(selector, style)
+zinjs.createZoomArea = function(id, style)
 {
-    return new zinjs.ZoomArea(selector, style);
+    return new zinjs.ZoomArea(id, style);
+};
+
+zinjs.ZoomArea.prototype._writeToBody = function(pageOffsetX, pageOffsetY, elementOffsetX, elementOffsetY, scale)
+{
+    var origin = pageOffsetX +'px '+ pageOffsetY +'px';
+    var transform = 'translate('+ -elementOffsetX +'px,'+ -elementOffsetY +'px) scale('+ scale +')';
+    $('body').css('transformOrigin', origin);
+    $('body').css('transform', transform);
+};
+
+zinjs.ZoomArea.prototype.zoomIn = function()
+{
+    if (this._active || zinjs.info.zoomArea !== null) { // FIX
+        this.zoomOut();
+    }
+    else {
+        var padding = 20;
+        var elemRect = this._elem.getBoundingClientRect();
+        var width = elemRect.width + ( padding * 2 );
+        var height = elemRect.height + ( padding * 2 );
+        var x = elemRect.left - padding;
+        var y = elemRect.top - padding;
+        var scale = Math.max( Math.min( window.innerWidth / width, window.innerHeight / height ), 1 );
+
+        console.log('x:'+x+' y:'+y+' width:'+width+' height:'+height+' scale:'+scale+' padding:'+padding);
+
+        if( scale > 1 ) {
+            x *= scale;
+            y *= scale;
+            var scrollOffset = zinjs.util.getScrollOffset();
+            console.log('scrollOffset.x:'+scrollOffset.x+' scrollOffset.y:'+scrollOffset.y+' x:'+x+' y:'+y+' scale:'+scale+' padding:'+padding);
+            this._writeToBody(scrollOffset.x, scrollOffset.y, x, y, scale);
+            this._active = true;
+            zinjs.info.zoomArea = this;
+        }
+    }
+};
+
+zinjs.ZoomArea.prototype.zoomOut = function()
+{
+    this._active = false;
+    zinjs.info.zoomArea = null;
+    // FIX
+    // if (this._ancestor !== null) {
+    //     this._ancestor.zoomIn();
+    // }
+    // else {
+        var scrollOffset = zinjs.util.getScrollOffset();
+        this._writeToBody(scrollOffset.x, scrollOffset.y, 0, 0, 1);
+    // }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -503,39 +555,6 @@ zinjs.util.clone = function(object)
     return temp;
 };
 
-zinjs.util.magnify = function(pageOffsetX, pageOffsetY, elementOffsetX, elementOffsetY, scale)
-{
-    // if( supportsTransforms ) {
-        var origin = pageOffsetX +'px '+ pageOffsetY +'px',
-            transform = 'translate('+ -elementOffsetX +'px,'+ -elementOffsetY +'px) scale('+ scale +')';
-
-            $('body').css('transformOrigin', origin);
-            $('body').css('transform', transform);
-    // }
-    // else {
-    //     // Reset all values
-    //     if( scale === 1 ) {
-    //         document.body.style.position = '';
-    //         document.body.style.left = '';
-    //         document.body.style.top = '';
-    //         document.body.style.width = '';
-    //         document.body.style.height = '';
-    //         document.body.style.zoom = '';
-    //     }
-    //     // Apply scale
-    //     else {
-    //         document.body.style.position = 'relative';
-    //         document.body.style.left = ( - ( pageOffsetX + elementOffsetX ) / scale ) + 'px';
-    //         document.body.style.top = ( - ( pageOffsetY + elementOffsetY ) / scale ) + 'px';
-    //         document.body.style.width = ( scale * 100 ) + '%';
-    //         document.body.style.height = ( scale * 100 ) + '%';
-    //         document.body.style.zoom = scale;
-    //     }
-    // }
-
-    zinjs.info.zoomLevel = scale;
-};
-
 zinjs.util.getScrollOffset = function ()
 {
     return {
@@ -544,43 +563,6 @@ zinjs.util.getScrollOffset = function ()
     };
 };
 
-zinjs.util.zoomIn = function(options)
-{
-    if(zinjs.info.zoomLevel !== 1) {
-        zinjs.util.zoomOut();
-    }
-    else {
-        options.x = options.x || 0;
-        options.y = options.y || 0;
-
-        if( !!options.element ) {
-            options.padding = options.padding || 20;
-            options.width = options.element.getBoundingClientRect().width + ( options.padding * 2 );
-            options.height = options.element.getBoundingClientRect().height + ( options.padding * 2 );
-            options.x = options.element.getBoundingClientRect().left - options.padding;
-            options.y = options.element.getBoundingClientRect().top - options.padding;
-        }
-
-        if( options.width !== undefined && options.height !== undefined ) {
-            options.scale = Math.max( Math.min( window.innerWidth / options.width, window.innerHeight / options.height ), 1 );
-        }
-
-        if( options.scale > 1 ) {
-            options.x *= options.scale;
-            options.y *= options.scale;
-
-            var scrollOffset = zinjs.util.getScrollOffset();
-            zinjs.util.magnify(scrollOffset.x, scrollOffset.y, options.x, options.y, options.scale);
-        }
-    }
-};
-
-zinjs.util.zoomOut = function()
-{
-    var scrollOffset = zinjs.util.getScrollOffset();
-    zinjs.util.magnify(scrollOffset.x, scrollOffset.y, 0, 0, 1);
-    zinjs.info.zoomLevel = 1;
-};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // listeners ////////////////////////////////////////////////////////////////////////////
