@@ -55,14 +55,15 @@
             {
                 // PLUGINS
                 zinjs.core.loadPlugin("js/plugins/testplugin");
+                zinjs.core.loadPlugin("js/plugins/debug-action");
                 zinjs.core.loadPlugin("js/plugins/rotate");
-                zinjs.core.loadPlugin("js/plugins/plugin");
                 zinjs.core.loadPlugin("js/plugins/zoom");
 
                 // TESTS
                 console.log("Mobilni pristroj? " + zinjs.info.isMobile);
                 var pluginExample = new Scroll();
                 pluginExample.hello();
+                pluginExample.debug();
 
                 // STYLES
                 var tileStyle = new zinjs.Styles();
@@ -71,41 +72,45 @@
                         rotateX: "180deg"
                     },
                     width: '220px',
-                    marginRight: '20px',
+                    height: '100%',
+                    marginRight: '10px',
+                    padding: '5px',
+                    marginBottom: '20px',
                     float: 'left',
+                    border: '2px dashed'
                 });
 
-                // COMPONENTS
-                var logo = new zinjs.Component("#logo");
+                // CONTAINERS
+                var logo = new zinjs.Container("#logo");
                 logo.addCss({transitionDuration: '1.2s'});
 
-                var tiles = new zinjs.Component(".tile");
+                var tiles = new zinjs.Container(".tile");
                 tiles.newCss(tileStyle);
 
-                var rowEnd = new zinjs.Component(".rowEnd");
+                var rowEnd = new zinjs.Container(".rowEnd");
                 rowEnd.addCss({
                     clear: 'both'
                 });
 
-                var copy = new zinjs.Component("#copy");
+                var copy = new zinjs.Container("#copy");
                 copy.addCss({
                     float: 'left'
                 });
 
-                var animations = new zinjs.createComponent("#logo, div");
+                var animations = new zinjs.createContainer("#logo, div, body");
                 animations.addCss({
                     transitionProperty: 'all',
                     transitionDuration: '0.7s',
-                    transitionTimingFunction: 'ease-in-out',
+                    transitionTimingFunction: 'ease',
                     transitionDelay: '0s'
                 }, false);
 
-                // COMPONENTS - CHILDREN, ANCESTORS
-                var box = new zinjs.Component("#box");
+                // CONTAINERS - CHILDREN, ANCESTORS
+                var box = new zinjs.Container("#box");
                 box.addChild(tiles, copy);
 
                 // EVENTS
-                $('#logo').hover(function() {
+                logo.hover(function() {
                     logo.rotate(380, 0, 0, 1);
                     logo.addCss({transform: {
                         scale: 1.2
@@ -117,7 +122,7 @@
                     }});
                 });
 
-                $('#box').hover(function() {
+                box.hover(function() {
                     tiles.addCss({
                         transform: {
                             rotateX: "360deg"
@@ -129,6 +134,25 @@
                             rotateX: "180deg"
                         },
                     });
+                });
+
+                tiles.hover(function(event) {
+                    event.data.cmp.rotate(20); // vrati komponentu nad kterou byl event vyvolan (=tiles)
+                    tiles.addCss({'cursor': 'pointer'});
+                }, function(event) {
+                    tiles.rotate(0);
+                });
+
+                // EXPERIMENTAL
+                $("body").on("click", '.tile', function(event){
+                    event.preventDefault();
+                    zinjs.util.zoomIn({ element: $(this).get(0) });
+                });
+
+                document.addEventListener( 'keyup', function(event) {
+                    if (zinjs.info.zoomLevel !== 1 && event.keyCode === 27) {
+                        zinjs.util.zoomOut();
+                    }
                 });
 
             });

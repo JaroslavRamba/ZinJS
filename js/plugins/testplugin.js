@@ -1,13 +1,6 @@
 [
     new zinjs.core.PluginPrototype(
-        "testplugin",
-        zinjs.core.pluginType.ACTION,
-        function()
-        {
-        }
-    ),
-    new zinjs.core.PluginPrototype(
-        "testplugin2",
+        "testPlugin1",
         zinjs.core.pluginType.COMPONENT,
         function Scroll()
         {
@@ -15,7 +8,7 @@
         }
     ),
     new zinjs.core.PluginPrototype(
-        "testplugin3",
+        "testPlugin2",
         zinjs.core.pluginType.EVENT,
         function installEvent(prototype)
         {

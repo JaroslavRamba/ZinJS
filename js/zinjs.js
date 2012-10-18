@@ -5,6 +5,19 @@ zinjs = {
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// helpers///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+Function.prototype.extend = function(ancestor)
+{
+    var F = function() {};
+    F.prototype = ancestor.prototype;
+    this.prototype = new F();
+    this.prototype.constructor = this;
+    this._superproto = ancestor.prototype;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
 // core /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -93,15 +106,15 @@ zinjs.core.loadPlugin =  function(pluginPath)
         if (plugin instanceof zinjs.core.PluginPrototype && !zinjs.core.isPluginLoaded(plugin)) {
             switch(plugin.type) {
                 case zinjs.core.pluginType.ACTION:
-                    eval("zinjs.Component.prototype." + plugin.name + " = plugin.content");
+                    eval("zinjs.AbstractComponent.prototype." + plugin.name + " = plugin.content");
                     break;
                 case zinjs.core.pluginType.COMPONENT:
                     eval(plugin.content.name + " = plugin.content");
-                    plugin.content.prototype = new zinjs.Component();
+                    plugin.content.prototype = new zinjs.AbstractComponent();
                     break;
                 case zinjs.core.pluginType.EVENT:
-                    eval("zinjs.Component.prototype." + plugin.name + " = null");
-                    eval(plugin.content + "(zinjs.Component.prototype)");
+                    eval("zinjs.AbstractComponent.prototype." + plugin.name + " = null");
+                    eval(plugin.content + "(zinjs.AbstractComponent.prototype)");
                     break;
             }
             zinjs.core.plugins.push(plugin);
@@ -151,11 +164,13 @@ zinjs.info.isMobile = (function()
     return false;
 })();
 
+zinjs.info.zoomLevel = 1;
+
 /////////////////////////////////////////////////////////////////////////////////////////
-// Component ////////////////////////////////////////////////////////////////////////////
+// AbstractComponent ////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-zinjs.Component = function(selector, style)
+zinjs.AbstractComponent = function(selector, style)
 {
     this._node = $(selector);
     this._ancestor = null;
@@ -168,34 +183,29 @@ zinjs.Component = function(selector, style)
     }
 };
 
-zinjs.createComponent = function(selector, style)
-{
-    return new zinjs.Component(selector, style);
-};
-
-zinjs.Component.prototype.find = function(selector)
+zinjs.AbstractComponent.prototype.find = function(selector)
 {
     return this._node.find(selector);
 };
 
-zinjs.Component.prototype.render = function()
+zinjs.AbstractComponent.prototype.render = function()
 {
     return this._node;
 };
 
-zinjs.Component.prototype.setAncestor = function(component)
+zinjs.AbstractComponent.prototype.setAncestor = function(component)
 {
     this._ancestor = component;
     component.getChildren().push(this);
     return this;
 };
 
-zinjs.Component.prototype.getAncestor = function()
+zinjs.AbstractComponent.prototype.getAncestor = function()
 {
     return this._ancestor;
 };
 
-zinjs.Component.prototype.addChild = function()
+zinjs.AbstractComponent.prototype.addChild = function()
 {
     for (var i in arguments) {
         arguments[i].setAncestor(this);
@@ -203,12 +213,12 @@ zinjs.Component.prototype.addChild = function()
     return this;
 };
 
-zinjs.Component.prototype.getChildren = function()
+zinjs.AbstractComponent.prototype.getChildren = function()
 {
     return this._children;
 };
 
-zinjs.Component.prototype.addCss = function(properties, overwrite)
+zinjs.AbstractComponent.prototype.addCss = function(properties, overwrite)
 {
     if (arguments.length == 1) {
         overwrite = true;
@@ -218,7 +228,7 @@ zinjs.Component.prototype.addCss = function(properties, overwrite)
     return this;
 };
 
-zinjs.Component.prototype.clearCss = function(properties)
+zinjs.AbstractComponent.prototype.clearCss = function(properties)
 {
     if (arguments.length === 0) {
         this._styles.clearCss();
@@ -230,7 +240,7 @@ zinjs.Component.prototype.clearCss = function(properties)
     return this;
 };
 
-zinjs.Component.prototype.newCss = function(x)
+zinjs.AbstractComponent.prototype.newCss = function(x)
 {
     if (x instanceof zinjs.Styles) {
         delete this._styles;
@@ -240,7 +250,7 @@ zinjs.Component.prototype.newCss = function(x)
     return this;
 };
 
-zinjs.Component.prototype._writeCss = function()
+zinjs.AbstractComponent.prototype._writeCss = function()
 {
     var properties = this._styles.getCss();
     var data;
@@ -259,6 +269,120 @@ zinjs.Component.prototype._writeCss = function()
     if (properties.length === 0) {
         node.removeAttribute("style");
     }
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// AbstractComponent Events /////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+zinjs.AbstractComponent.prototype.hover = function()
+{
+    this._node.off('mouseenter mouseleave');
+    if (arguments.length === 1) {
+        this._node.on('mouseenter mouseleave', {cmp: this}, arguments[0]);
+    }
+    else if (arguments.length === 2) {
+        this._node.on('mouseenter', {cmp: this}, arguments[0]);
+        this._node.on('mouseleave', {cmp: this}, arguments[1]);
+    }
+    return this;
+};
+
+zinjs.AbstractComponent.prototype.click = function(handler)
+{
+    this._node.off('click');
+    if (arguments.length === 1) {
+        this._node.on('click', {cmp: this}, handler);
+    }
+    return this;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// Container ////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+zinjs.Container = function(selector, style)
+{
+    zinjs.AbstractComponent.call(this, selector, style);
+};
+
+zinjs.Container.extend(zinjs.AbstractComponent);
+
+zinjs.createContainer = function(selector, style)
+{
+    return new zinjs.Container(selector, style);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ZoomArea /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+zinjs.ZoomArea = function(selector, style)
+{
+    zinjs.AbstractComponent.call(this, selector, style);
+};
+
+zinjs.ZoomArea.extend(zinjs.AbstractComponent);
+
+zinjs.createZoomArea = function(selector, style)
+{
+    return new zinjs.ZoomArea(selector, style);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ExtremeZoomImage /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+zinjs.ExtremeZoomImage = function(selector, style)
+{
+    zinjs.AbstractComponent.call(this, selector, style);
+};
+
+zinjs.ExtremeZoomImage.extend(zinjs.AbstractComponent);
+
+zinjs.createExtremeZoomImage = function(selector, style)
+{
+    return new zinjs.ExtremeZoomImage(selector, style);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ExtremeZoomImage /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+zinjs.MultiScaleImage = function(selector, style)
+{
+    zinjs.AbstractComponent.call(this, selector, style);
+};
+
+zinjs.MultiScaleImage.extend(zinjs.AbstractComponent);
+
+zinjs.createMultiScaleImage = function(selector, style)
+{
+    return new zinjs.MultiScaleImage(selector, style);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ControlPanel /////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+zinjs.ControlPanel = function(selector, style)
+{
+    zinjs.AbstractComponent.call(this, selector, style);
+};
+
+zinjs.ControlPanel.extend(zinjs.AbstractComponent);
+
+zinjs.createControlPanel = function(selector, style)
+{
+    return new zinjs.ControlPanel(selector, style);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -379,14 +503,93 @@ zinjs.util.clone = function(object)
     return temp;
 };
 
+zinjs.util.magnify = function(pageOffsetX, pageOffsetY, elementOffsetX, elementOffsetY, scale)
+{
+    // if( supportsTransforms ) {
+        var origin = pageOffsetX +'px '+ pageOffsetY +'px',
+            transform = 'translate('+ -elementOffsetX +'px,'+ -elementOffsetY +'px) scale('+ scale +')';
+
+            $('body').css('transformOrigin', origin);
+            $('body').css('transform', transform);
+    // }
+    // else {
+    //     // Reset all values
+    //     if( scale === 1 ) {
+    //         document.body.style.position = '';
+    //         document.body.style.left = '';
+    //         document.body.style.top = '';
+    //         document.body.style.width = '';
+    //         document.body.style.height = '';
+    //         document.body.style.zoom = '';
+    //     }
+    //     // Apply scale
+    //     else {
+    //         document.body.style.position = 'relative';
+    //         document.body.style.left = ( - ( pageOffsetX + elementOffsetX ) / scale ) + 'px';
+    //         document.body.style.top = ( - ( pageOffsetY + elementOffsetY ) / scale ) + 'px';
+    //         document.body.style.width = ( scale * 100 ) + '%';
+    //         document.body.style.height = ( scale * 100 ) + '%';
+    //         document.body.style.zoom = scale;
+    //     }
+    // }
+
+    zinjs.info.zoomLevel = scale;
+};
+
+zinjs.util.getScrollOffset = function ()
+{
+    return {
+        x: window.scrollX !== undefined ? window.scrollX : window.pageXOffset,
+        y: window.scrollY !== undefined ? window.scrollY : window.pageXYffset
+    };
+};
+
+zinjs.util.zoomIn = function(options)
+{
+    if(zinjs.info.zoomLevel !== 1) {
+        zinjs.util.zoomOut();
+    }
+    else {
+        options.x = options.x || 0;
+        options.y = options.y || 0;
+
+        if( !!options.element ) {
+            options.padding = options.padding || 20;
+            options.width = options.element.getBoundingClientRect().width + ( options.padding * 2 );
+            options.height = options.element.getBoundingClientRect().height + ( options.padding * 2 );
+            options.x = options.element.getBoundingClientRect().left - options.padding;
+            options.y = options.element.getBoundingClientRect().top - options.padding;
+        }
+
+        if( options.width !== undefined && options.height !== undefined ) {
+            options.scale = Math.max( Math.min( window.innerWidth / options.width, window.innerHeight / options.height ), 1 );
+        }
+
+        if( options.scale > 1 ) {
+            options.x *= options.scale;
+            options.y *= options.scale;
+
+            var scrollOffset = zinjs.util.getScrollOffset();
+            zinjs.util.magnify(scrollOffset.x, scrollOffset.y, options.x, options.y, options.scale);
+        }
+    }
+};
+
+zinjs.util.zoomOut = function()
+{
+    var scrollOffset = zinjs.util.getScrollOffset();
+    zinjs.util.magnify(scrollOffset.x, scrollOffset.y, 0, 0, 1);
+    zinjs.info.zoomLevel = 1;
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // listeners ////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
-$(window).bind("resize", windowResized);
 
 function windowResized()
 {
     zinjs.info.height = $(window).height();
     zinjs.info.width = $(window).width();
 }
+
+$(window).bind("resize", windowResized);

@@ -3,6 +3,6 @@ debug = new zinjs.core.PluginPrototype(
     zinjs.core.pluginType.ACTION,
     function()
     {
-        alert("That was added for debuging");
+        console.log("Action added for testing plugin-action.");
     }
 );
