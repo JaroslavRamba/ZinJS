@@ -13,7 +13,7 @@
         <!-- Web style -->
         <link rel='stylesheet' type='text/css' href='./css/style.css' media='screen,projection,tv' />
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
         <script src="./js/zinjs.js" type="text/javascript"></script>
 
         <link href='http://fonts.googleapis.com/css?family=Averia+Libre' rel='stylesheet' type='text/css'>
@@ -26,67 +26,88 @@
             <div class="title">
                 <h1>ZinJS</h1>
             </div>
-            <div class="tile">
+            <div class="tile rowEnd">
                 <p><strong>ZinJS</strong> is a new javascript and css based library which create art from you website.</p>
             </div>
             <div class="tile">
                 <p><strong>How it works?</strong> It is simple. Just download library from Github and link zinjs.js into your source code.</p>
             </div>
-            <div class="tile">
+            <div class="tile rowEnd">
                 <p><strong>It is free?</strong> Yes, it's completely free. You can use, redistribuate or change library even in commercial projects. ZinJS is distribuated under new BSD licence. You must only keep copyright marks inside source code of library.</p>
             </div>
             <div class="tile">
                 <p><strong>What I can do with library?</strong> The only limit is your imagination. You can create website based on "zooming" of content or rotating or something else...</p>
             </div>
-            <div class="tile">
+            <div class="tile rowEnd">
                 <p><strong>Documentation</strong> We will add documentation on this site as soon as possible. In a meanwhile you can follow us on Github. Github also provide bug report form.</p>
             </div>
             <div class="tile">
                 <p><strong>Prototype</strong> Please note that ZinJS is still prototype so it's still under development. Some features may be altered.</p>
             </div>
+            <div id="copy">
+                Copyright &copy; zinjs team | <a href="mailto:info@zinjs.com">contact</a>
+            </div>
         </div>
 
-        <div id="copy">
-            Copyright &copy; zinjs team | <a href="mailto:info@zinjs.com">contact</a>
-        </div>
 
         <script>
             $(document).ready(function()
             {
-                console.log("Mobilni pristroj? " + zinjs.info.isMobile);
-
+                // PLUGINS
                 zinjs.core.loadPlugin("js/plugins/testplugin");
                 zinjs.core.loadPlugin("js/plugins/rotate");
                 zinjs.core.loadPlugin("js/plugins/plugin");
                 zinjs.core.loadPlugin("js/plugins/zoom");
-                zinjs.core.loadPlugin("js/plugins/zoom");
 
+                // TESTS
+                console.log("Mobilni pristroj? " + zinjs.info.isMobile);
                 var pluginExample = new Scroll();
                 pluginExample.hello();
 
+                // STYLES
                 var tileStyle = new zinjs.Styles();
                 tileStyle.addCss({
                     transform: {
                         rotateX: "180deg"
                     },
-                    transition: "all 0.2s linear 0"
+                    width: '220px',
+                    marginRight: '20px',
+                    float: 'left',
                 });
+
+                // COMPONENTS
+                var logo = new zinjs.Component("#logo");
+                logo.addCss({transitionDuration: '1.2s'});
 
                 var tiles = new zinjs.Component(".tile");
                 tiles.newCss(tileStyle);
 
-                var logo = new zinjs.createComponent("#logo");
-                logo.addCss({
-                    transition: "all 1s ease-in-out 0"
+                var rowEnd = new zinjs.Component(".rowEnd");
+                rowEnd.addCss({
+                    clear: 'both'
                 });
 
+                var copy = new zinjs.Component("#copy");
+                copy.addCss({
+                    float: 'left'
+                });
+
+                var animations = new zinjs.createComponent("#logo, div");
+                animations.addCss({
+                    transitionProperty: 'all',
+                    transitionDuration: '0.7s',
+                    transitionTimingFunction: 'ease-in-out',
+                    transitionDelay: '0s'
+                }, false);
+
+                // EVENTS
                 $('#logo').hover(function() {
-                    logo.rotate(90, 0, 0, 0);
+                    logo.rotate(380, 0, 0, 1);
                     logo.addCss({transform: {
-                        scale: 0.2
+                        scale: 1.2
                     }});
                 }, function() {
-                    logo.rotate(-90, 0, 0, 0);
+                    logo.rotate(0, 0, 0, 1);
                     logo.addCss({transform: {
                         scale: 1
                     }});
