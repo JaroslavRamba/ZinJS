@@ -92,6 +92,10 @@
                     float: 'left'
                 });
 
+                // COMPONENTS - CHILDREN, ANCESTORS
+                var box = new zinjs.Component("#box");
+                box.addChild(tiles, copy);
+
                 var animations = new zinjs.createComponent("#logo, div");
                 animations.addCss({
                     transitionProperty: 'all',

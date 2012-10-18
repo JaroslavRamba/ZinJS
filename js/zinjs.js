@@ -157,12 +157,14 @@ zinjs.info.isMobile = (function()
 
 zinjs.Component = function(selector, style)
 {
-    this.node = $(selector);
+    this._node = $(selector);
+    this._ancestor = null;
+    this._children = [];
     if (style instanceof zinjs.Styles) {
-        this.styles = zinjs.util.clone(style);
-        zinjs.util.setCss(this.node, this.styles.css);
+        this._styles = zinjs.util.clone(style);
+        this._writeCss();
     } else {
-        this.styles = new zinjs.Styles();
+        this._styles = new zinjs.Styles();
     }
 };
 
@@ -173,12 +175,37 @@ zinjs.createComponent = function(selector, style)
 
 zinjs.Component.prototype.find = function(selector)
 {
-    return this.node.find(selector);
+    return this._node.find(selector);
 };
 
 zinjs.Component.prototype.render = function()
 {
-    return this.node;
+    return this._node;
+};
+
+zinjs.Component.prototype.setAncestor = function(component)
+{
+    this._ancestor = component;
+    component.getChildren().push(this);
+    return this;
+};
+
+zinjs.Component.prototype.getAncestor = function()
+{
+    return this._ancestor;
+};
+
+zinjs.Component.prototype.addChild = function(component)
+{
+    for (var i in arguments) {
+        component.setAncestor(this);
+    }
+    return this;
+};
+
+zinjs.Component.prototype.getChildren = function()
+{
+    return this._children;
 };
 
 zinjs.Component.prototype.addCss = function(properties, overwrite)
@@ -186,7 +213,7 @@ zinjs.Component.prototype.addCss = function(properties, overwrite)
     if (arguments.length == 1) {
         overwrite = true;
     }
-    this.styles.addCss(properties, overwrite);
+    this._styles.addCss(properties, overwrite);
     this._writeCss();
     return this;
 };
@@ -194,10 +221,10 @@ zinjs.Component.prototype.addCss = function(properties, overwrite)
 zinjs.Component.prototype.clearCss = function(properties)
 {
     if (arguments.length === 0) {
-        this.styles.clearCss();
+        this._styles.clearCss();
     }
     else {
-        this.styles.clearCss(properties);
+        this._styles.clearCss(properties);
     }
     this._writeCss();
     return this;
@@ -206,8 +233,8 @@ zinjs.Component.prototype.clearCss = function(properties)
 zinjs.Component.prototype.newCss = function(x)
 {
     if (x instanceof zinjs.Styles) {
-        delete this.styles;
-        this.styles = zinjs.util.clone (x);
+        delete this._styles;
+        this._styles = zinjs.util.clone (x);
         this._writeCss();
     }
     return this;
@@ -215,7 +242,7 @@ zinjs.Component.prototype.newCss = function(x)
 
 zinjs.Component.prototype._writeCss = function()
 {
-    var properties = this.styles.css;
+    var properties = this._styles.getCss();
     var data;
     for (var type in properties) {
         if (properties[type] instanceof Object) {
@@ -223,10 +250,10 @@ zinjs.Component.prototype._writeCss = function()
             for (var item in properties[type]) {
                 data += item + "(" +  properties[type][item] + ") ";
             }
-            this.node.css(type, data);
+            this._node.css(type, data);
         }
         else {
-            this.node.css(type, properties[type]);
+            this._node.css(type, properties[type]);
         }
     }
     if (properties.length === 0) {
@@ -240,7 +267,12 @@ zinjs.Component.prototype._writeCss = function()
 
 zinjs.Styles = function()
 {
-    this.css = {};
+    this._css = {};
+};
+
+zinjs.Styles.prototype.getCss = function()
+{
+    return this._css;
 };
 
 zinjs.Styles.prototype.addCss = function(properties , overwrite)
@@ -250,12 +282,12 @@ zinjs.Styles.prototype.addCss = function(properties , overwrite)
     }
     for (var type in properties) {
         if (properties[type] instanceof Object) {
-            if (!this.css[type]) {
-                this.css[type] = properties[type];
+            if (!this._css[type]) {
+                this._css[type] = properties[type];
             }
             for (var item in properties[type]) {
-                if (overwrite || !this.css[type][item]) {
-                    this.css[type][item] = properties[type][item];
+                if (overwrite || !this._css[type][item]) {
+                    this._css[type][item] = properties[type][item];
                 }
                 else {
                     console.log(type.toString() + " " + item.toString() + " not rewritable");
@@ -263,12 +295,12 @@ zinjs.Styles.prototype.addCss = function(properties , overwrite)
             }
         }
         else {
-            if (!this.css[type]) {
-                this.css[type] = properties[type];
+            if (!this._css[type]) {
+                this._css[type] = properties[type];
             }
             else {
                 if (overwrite) {
-                    this.css[type] = properties[type];
+                    this._css[type] = properties[type];
                 }
                 else {
                     console.log(type.toString() + " not rewritable");
@@ -283,8 +315,8 @@ zinjs.Styles.prototype.clearCss = function(properties)
 {
     var type;
     if (arguments.length === 0) {
-        for (type in this.css) {
-            delete this.css[type];
+        for (type in this._css) {
+            delete this._css[type];
         }
     }
     else if (arguments.length == 1) {
@@ -293,16 +325,16 @@ zinjs.Styles.prototype.clearCss = function(properties)
         }
         for (type in properties) {
             var inside = properties[type].split("-");
-            if (this.css[inside[0]]) {
+            if (this._css[inside[0]]) {
                 if (inside.length == 1) {
-                    delete this.css[inside[0]];
+                    delete this._css[inside[0]];
                 }
                 else if (inside.length == 2) {
-                    if (this.css[inside[0]][inside[1]]) {
-                        delete this.css[inside[0]][inside[1]];
+                    if (this._css[inside[0]][inside[1]]) {
+                        delete this._css[inside[0]][inside[1]];
                     }
-                    if (this.css[inside[0]].length === 0) {
-                        delete this.css[inside[0]];
+                    if (this._css[inside[0]].length === 0) {
+                        delete this._css[inside[0]];
                     }
                 }
             }
@@ -317,11 +349,11 @@ zinjs.Styles.prototype.clearCss = function(properties)
 zinjs.Styles.prototype.showCss = function()
 {
     console.log("Style:");
-    for (var type in this.css) {
-        console.log(type + ": " + this.css[type]);
-        if (this.css[type] instanceof Object) {
-            for (var type2 in this.css[type]) {
-                console.log(type2 + ": " + this.css[type][type2]);
+    for (var type in this._css) {
+        console.log(type + ": " + this._css[type]);
+        if (this._css[type] instanceof Object) {
+            for (var type2 in this._css[type]) {
+                console.log(type2 + ": " + this._css[type][type2]);
             }
         }
     }
