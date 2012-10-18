@@ -92,10 +92,6 @@
                     float: 'left'
                 });
 
-                // COMPONENTS - CHILDREN, ANCESTORS
-                var box = new zinjs.Component("#box");
-                box.addChild(tiles, copy);
-
                 var animations = new zinjs.createComponent("#logo, div");
                 animations.addCss({
                     transitionProperty: 'all',
@@ -103,6 +99,10 @@
                     transitionTimingFunction: 'ease-in-out',
                     transitionDelay: '0s'
                 }, false);
+
+                // COMPONENTS - CHILDREN, ANCESTORS
+                var box = new zinjs.Component("#box");
+                box.addChild(tiles, copy);
 
                 // EVENTS
                 $('#logo').hover(function() {

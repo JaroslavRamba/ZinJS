@@ -195,10 +195,10 @@ zinjs.Component.prototype.getAncestor = function()
     return this._ancestor;
 };
 
-zinjs.Component.prototype.addChild = function(component)
+zinjs.Component.prototype.addChild = function()
 {
     for (var i in arguments) {
-        component.setAncestor(this);
+        arguments[i].setAncestor(this);
     }
     return this;
 };
