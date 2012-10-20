@@ -158,7 +158,12 @@ zinjs.info.height = $(window).height();
 
 zinjs.info.isMobile = (function()
 {
-    if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/BlackBerry/i)) {
+    if (navigator.userAgent.match(/Android/i) || 
+        navigator.userAgent.match(/iPhone/i) || 
+        navigator.userAgent.match(/iPad/i) || 
+        navigator.userAgent.match(/iPod/i) || 
+        navigator.userAgent.match(/webOS/i) || 
+        navigator.userAgent.match(/BlackBerry/i)) {
         return true;
     }
     return false;
@@ -279,11 +284,17 @@ zinjs.AbstractComponent.prototype.hover = function()
 {
     this._node.off('mouseenter mouseleave');
     if (arguments.length === 1) {
-        this._node.on('mouseenter mouseleave', {cmp: this}, arguments[0]);
+        this._node.on('mouseenter mouseleave', {
+            cmp: this
+        }, arguments[0]);
     }
     else if (arguments.length === 2) {
-        this._node.on('mouseenter', {cmp: this}, arguments[0]);
-        this._node.on('mouseleave', {cmp: this}, arguments[1]);
+        this._node.on('mouseenter', {
+            cmp: this
+        }, arguments[0]);
+        this._node.on('mouseleave', {
+            cmp: this
+        }, arguments[1]);
     }
     return this;
 };
@@ -292,7 +303,9 @@ zinjs.AbstractComponent.prototype.click = function(handler)
 {
     this._node.off('click');
     if (arguments.length === 1) {
-        this._node.on('click', {cmp: this}, handler);
+        this._node.on('click', {
+            cmp: this
+        }, handler);
     }
     return this;
 };
@@ -378,9 +391,9 @@ zinjs.ZoomArea.prototype.zoomOut = function()
     //     this._ancestor.zoomIn();
     // }
     // else {
-        var scrollOffset = zinjs.util.getScrollOffset();
-        this._writeToBody(scrollOffset.x, scrollOffset.y, 0, 0, 1);
-    // }
+    var scrollOffset = zinjs.util.getScrollOffset();
+    this._writeToBody(scrollOffset.x, scrollOffset.y, 0, 0, 1);
+// }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
