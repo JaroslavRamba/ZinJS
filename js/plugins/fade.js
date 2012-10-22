@@ -20,7 +20,7 @@ new zinjs.core.PluginPrototype(
                 });
                 break;
             default:
-                console.log("Bad parameters for set rotate!");
+                console.log("Bad parameters for set fadeIn!");
         }
     }
     ),
@@ -45,7 +45,7 @@ new zinjs.core.PluginPrototype(
                 });
                 break;
             default:
-                console.log("Bad parameters for set rotate!");
+                console.log("Bad parameters for set fadeOut!");
         }
     }
     )
