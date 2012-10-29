@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='cs' lang='cs'>
+    <head>
+        <!-- XHTML Specification -->
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+        <meta http-equiv='Content-Language' content='cs' />
+        <meta name='robots' content='index,follow' />
+        <meta name='copyright' content='© 2012' />
+
+        <title>ZinJS</title>
+
+        <!-- Web style -->
+        <link rel='stylesheet' type='text/css' href='./css/style.css' media='screen,projection,tv' />
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
+        <script src="./js/zinjs.js" type="text/javascript"></script>
+
+
+        <link href='http://fonts.googleapis.com/css?family=Averia+Libre' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body>
+        <div class="zoom_container">
+        <img src="./img/MS4.JPG" alt="zinjs" id="zoom" width="486" height="324" />
+        </div>
+        <div id="box">
+            <div class="title">
+                <h1>ZinJS</h1>
+            </div>
+            <div class="tile rowEnd">
+                <p><strong>ZinJS</strong> is a new javascript and css based library which create art from you website.</p>
+            </div>
+            <div class="tile">
+                <p><strong>How it works?</strong> It is simple. Just download library from Github and link zinjs.js into your source code.</p>
+            </div>
+            <div class="tile rowEnd">
+                <p><strong>It is free?</strong> Yes, it's completely free. You can use, redistribuate or change library even in commercial projects. ZinJS is distribuated under new BSD licence. You must only keep copyright marks inside source code of library.</p>
+            </div>
+            <div class="tile">
+                <p><strong>What I can do with library?</strong> The only limit is your imagination. You can create website based on "zooming" of content or rotating or something else...</p>
+            </div>
+            <div class="tile rowEnd">
+                <p><strong>Documentation</strong> We will add documentation on this site as soon as possible. In a meanwhile you can follow us on Github. Github also provide bug report form.</p>
+            </div>
+            <div class="tile">
+                <p><strong>Prototype</strong> Please note that ZinJS is still prototype so it's still under development. Some features may be altered.</p>
+            </div>
+            <div id="copy">
+                Copyright &copy; zinjs team | <a href="mailto:info@zinjs.com">contact</a>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function()
+            {
+                // PLUGINS
+                zinjs.core.loadPlugin("js/plugins/testplugin");
+                zinjs.core.loadPlugin("js/plugins/debug-action");
+                zinjs.core.loadPlugin("js/plugins/rotate");
+                zinjs.core.loadPlugin("js/plugins/zoom");
+
+                // TESTS
+                console.log("Mobilni pristroj? " + zinjs.info.isMobile);
+                var pluginExample = new Scroll();
+                pluginExample.hello();
+                pluginExample.debug();
+
+                // STYLES
+                var tileStyle = new zinjs.Styles();
+                tileStyle.addCss({
+                    // transform: {
+                    //     rotateX: "180deg"
+                    // },
+                    width: '220px',
+                    marginRight: '10px',
+                    padding: '5px',
+                    marginBottom: '20px',
+                    float: 'left',
+                    border: '2px dashed'
+                });
+
+                // CONTAINERS
+                var box = new zinjs.ZoomArea("#box");
+                
+        var logo_container=new zinjs.Container(".zoom_container");
+        
+                logo_container.addCss({width:'486px',height:'324px',overflow:'hidden'});
+
+                var logo = new zinjs.MultiScaleImage("#zoom",null,new Array({url:'img/MS4.JPG',scale:1},{url:'img/MS2.JPG',scale:4}));
+                logo.addCss({transitionDuration: '1.2s'});
+
+                var rowEnd = new zinjs.Container(".rowEnd");
+                rowEnd.addCss({
+                    clear: 'both'
+                });
+
+                var copy = new zinjs.Container("#copy");
+                copy.addCss({
+                    float: 'left'
+                });
+
+                var animations = new zinjs.createContainer("#zoom, .tile, body");
+                animations.addCss({
+                    transitionProperty: 'all',
+                    transitionDuration: '0.7s',
+                    transitionTimingFunction: 'ease',
+                    transitionDelay: '0s'
+                }, false);
+
+                
+                // EVENTS
+                logo.hover(function() {
+                    logo.zoomLevel(2);
+                }, function() {
+                   logo.zoomLevel(1);
+                });
+
+                // COMPONENTS - CHILDREN, ANCESTORS
+                var id = 1;
+                var zoomArea = null;
+                $('.tile').each(function() {
+                    $(this).attr('id', id);
+                    zoomArea = new zinjs.ZoomArea('#'+id, tileStyle);
+                    zoomArea.click(function(event) {
+                        event.preventDefault();
+                        event.data.cmp.zoomIn();
+                    });
+                    zoomArea.hover(function(event) {
+                        // event.data.cmp.addCss({ // BUG - temer nemozne na div "najet" - spustit hover
+                        //     transform: {
+                        //         rotateX: "360deg"
+                        //     }
+                        // });
+                        event.data.cmp.rotate(20); // vrati komponentu nad kterou byl event vyvolan (=zoomArea)
+                        event.data.cmp.addCss({'cursor': 'pointer'});
+                    }, function(event) {
+                        // event.data.cmp.addCss({
+                        //     transform: {
+                        //         rotateX: "180deg"
+                        //     },
+                        // });
+                        event.data.cmp.rotate(0);
+                    });
+                    box.addChild(zoomArea);
+                    id++;
+                });
+                zoomArea = null;
+                box.getChildren()[2].addCss({
+                    width: '450px'
+                });
+                box.getChildren()[3].addCss({
+                    width: '450px'
+                });
+
+            });
+        </script>
+    </body>
+</html>

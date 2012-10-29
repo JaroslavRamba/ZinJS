@@ -418,14 +418,38 @@ zinjs.createExtremeZoomImage = function(selector, style)
 // ExtremeZoomImage /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO
-
-zinjs.MultiScaleImage = function(selector, style)
+// TODO -- Experimental
+//images=new Array({url:'',scale:1},{url:'',scale:2})
+zinjs.MultiScaleImage = function(selector, style,images)
 {
+    this.images=images;
     zinjs.AbstractComponent.call(this, selector, style);
+    var node=this;
+    node.scale=1;
+    node._node[0].addEventListener("webkitTransitionEnd",function(e)
+					{
+						    node.addCss({ transitionDuration: '0s'});
+                                                    node.addCss({transform: {
+                                                    scale: 1
+                                                    }});
+                                                    node._node[0].src=node.nextimg;
+					},false);
 };
 
 zinjs.MultiScaleImage.extend(zinjs.AbstractComponent);
+
+//level 1,2,3,4
+zinjs.MultiScaleImage.prototype.zoomLevel = function(level)
+{
+    var imgarg=this.images[level-1];
+    this.nextimg=imgarg.url;
+    var scale=this.scale;
+    this.addCss({ transitionDuration: '1.2s'});
+    this.addCss({transform: {
+                        scale: imgarg.scale/scale
+    }});
+    this.scale=imgarg.scale;
+};
 
 zinjs.createMultiScaleImage = function(selector, style)
 {
