@@ -149,25 +149,25 @@
         var zoomArea = null;
         $('.tile').each(function() {
           $(this).attr('id', id);
-          zoomArea = new zinjs.ZoomArea('#'+id, tileStyle);
-          zoomArea.click(function(event) {
-            event.preventDefault();
-            event.data.cmp.zoomIn();
-          });
+          zoomArea = new zinjs.Container('#'+id, tileStyle);
+          // zoomArea.click(function(event) {
+          //   event.preventDefault();
+          //   event.data.cmp.zoomIn();
+          // });
           zoomArea.hover(function(event) {
-            // event.data.cmp.addCss({ // BUG - temer nemozne na div "najet" - spustit hover
-            //     transform: {
-            //         rotateX: "360deg"
-            //     }
-            // });
+            event.data.cmp.addCss({ // BUG - temer nemozne na div "najet" - spustit hover
+                transform: {
+                    rotateX: "360deg"
+                }
+            });
             event.data.cmp.rotate(20); // vrati komponentu nad kterou byl event vyvolan (=zoomArea)
             event.data.cmp.addCss({'cursor': 'pointer'});
           }, function(event) {
-            // event.data.cmp.addCss({
-            //     transform: {
-            //         rotateX: "180deg"
-            //     },
-            // });
+            event.data.cmp.addCss({
+                transform: {
+                    rotateX: "180deg"
+                },
+            });
             event.data.cmp.rotate(0);
           });
           box.addChild(zoomArea);
