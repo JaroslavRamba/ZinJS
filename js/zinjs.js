@@ -467,15 +467,29 @@ zinjs.MultiScaleImage = function(selector, style, images)
     this.images=images;
     zinjs.AbstractComponent.call(this, selector, style);
     var node=this;
+    if(node._node[0].children.length>0)
+        this.image=new zinjs.Container(selector+' img', style);
+    else
+        {
+        var tmp=document.createElement('img');
+            this._node[0].appendChild(tmp);
+          this.image=new zinjs.Container(selector+' img', style);
+          this.image._node[0].src=this.images[0].url;
+      }
+        
     node.scale=1;
-    node._node[0].addEventListener("webkitTransitionEnd",function(e)
+    var events=new Array("transitionEnd","webkitTransitionEnd","msTransitionEnd","transitionend","oTransitionEnd");
+    for(var i=0;i<events.length;i++)
     {
-        node.addCss({ transitionDuration: '0s'});
-        node.addCss({transform: {
-        scale: 1
-        }});
-        node._node[0].src=node.nextimg;
-    },false);
+        node.image._node[0].addEventListener(events[i],function(e)
+        {
+            node.image.addCss({transitionDuration: '0s'});
+            node.image.addCss({transform: {
+            scale: 1
+            }});
+            node.image._node[0].src=node.nextimg;
+        },false);
+    }
 };
 
 zinjs.MultiScaleImage.extend(zinjs.AbstractComponent);
@@ -486,8 +500,8 @@ zinjs.MultiScaleImage.prototype.zoomLevel = function(level)
     var imgarg=this.images[level-1];
     this.nextimg=imgarg.url;
     var scale=this.scale;
-    this.addCss({ transitionDuration: '1.2s'});
-    this.addCss({transform: {
+    this.image.addCss({transitionDuration: '1.2s'});
+    this.image.addCss({transform: {
             scale: imgarg.scale/scale
     }});
     this.scale=imgarg.scale;

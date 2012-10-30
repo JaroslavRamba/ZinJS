@@ -57,7 +57,7 @@
     </div>
 
     <div class="zoom_container">
-      <img src="./img/MS1.JPG" alt="zinjs" id="zoom" width="486" height="324" />
+      <!-- <img src="./img/MS4.JPG" alt="zinjs" id="zoom" width="486" height="324" /> -->
     </div>
 
     <script>
@@ -129,16 +129,16 @@
         });
 
         var logo_container=new zinjs.MultiScaleImage(".zoom_container", animations, new Array(
-            {url:'img/MS1.JPG', scale:1},
-            {url:'img/MS2.JPG', scale:2},
-            {url:'img/MS3.JPG', scale:3},
-            {url:'img/MS4.JPG', scale:4}
+            {url:'img/MS4.JPG', scale:1},
+            {url:'img/MS3.JPG', scale:2},
+            {url:'img/MS2.JPG', scale:4},
+            {url:'img/MS1.JPG', scale:8}
           )
         );
 
         logo_container.addCss({position: 'absolute', top: '500px', width:'486px', height:'324px', overflow:'hidden'});
 
-        var ii = 1;
+        var ii = 2;
         logo_container.click(function(event) {
           event.preventDefault();
           event.data.cmp.zoomLevel(ii);
