@@ -367,40 +367,66 @@ zinjs.createZoomArea = function(id, style, x, y)
 zinjs.ZoomArea.prototype._init = function(x, y)
 {
     this.addCss({
-    transform: {
-        translate3d: x + 'px, ' + y + 'px, 0px'
-    }
+        transform: {
+            translate3d: x + 'px, ' + y + 'px, 0px'
+        },
+        cursor: 'pointer'
+    });
+    this.click(function(event) {
+        event.preventDefault();
+        event.data.cmp.zoomIn();
     });
 };
 
-zinjs.ZoomArea.prototype._writeToBody = function(pageOffsetX, pageOffsetY, elementOffsetX, elementOffsetY, scale)
+zinjs.ZoomArea.prototype._writeToBody = function(properties)
 {
-    var transform = 'translate('+ -elementOffsetX +'px,'+ -elementOffsetY +'px)';
-    var scaling = 'perspective(' + zinjs.info.config.perspective / scale + ') scale(' + scale + ')';
+    if (properties === null || properties === undefined) {properties = {};}
+    if (properties.x === null || properties.x === undefined || isNaN(properties.x)) {properties.x = 0;}
+    if (properties.y === null || properties.y === undefined || isNaN(properties.y)) {properties.y = 0;}
+    if (properties.scale === null || properties.scale === undefined || isNaN(properties.scale)) {properties.scale = 1;}
+    if (properties.rotateX === null || properties.rotateX === undefined || isNaN(properties.rotateX)) {properties.rotateX = 0;}
+    if (properties.rotateY === null || properties.rotateY === undefined || isNaN(properties.rotateY)) {properties.rotateY = 0;}
+    if (properties.rotateZ === null || properties.rotateZ === undefined || isNaN(properties.rotateZ)) {properties.rotateZ = 0;}
+    var transform = 'translate('+ -properties.x +'px,'+ -properties.y +'px) rotateX(' + -properties.rotateX + 'deg) rotateY(' + -properties.rotateY + 'deg) rotateZ(' + -properties.rotateZ + 'deg)';
+    var scaling = 'perspective(' + zinjs.info.config.perspective / properties.scale + ') scale(' + properties.scale + ')';
     zinjs.info.canvasTranslate.css('transform', transform);
     zinjs.info.canvasScale.css('transform', scaling);
 };
 
 zinjs.ZoomArea.prototype.zoomIn = function()
 {
-    var elemRect = this._elem.getBoundingClientRect();
-    var width = parseInt(this._node.css('width'), 10);
-    var height = parseInt(this._node.css('height'), 10);
+    if (zinjs.info.zoomArea !== null) {
+        zinjs.info.zoomArea._active = false;
+    }
+    // var elemRect = this._elem.getBoundingClientRect();
+    // var width = elemRect.width;
+    // var height = elemRect.height ;
     var x = this.x;
     var y = this.y;
     var scale;
     var sc = this._styles._css['transform']['scale'];
-    console.log(sc);
-    if (sc) {
+    var rX = parseInt(this._styles._css['transform']['rotateX'], 10);
+    var rY = parseInt(this._styles._css['transform']['rotateY'], 10);
+    var rZ = parseInt(this._styles._css['transform']['rotateZ'], 10);
+    // var optsc = Math.max( Math.min( zinjs.info.width / width, zinjs.info.height / height ), 1 );
+    if (sc !== null && sc !== undefined && !isNaN(sc)) {
         scale = (1/sc) * zinjs.util.computeWindowScale(zinjs.info.config);
+        // scale = (1/sc) * optsc;
     }
     else {
         scale = zinjs.util.computeWindowScale(zinjs.info.config);
+        // scale = optsc;
     }
 
-    console.log('x:'+x+' y:'+y+' width:'+width+' height:'+height+' scale:'+scale);
 
-    this._writeToBody(0, 0, x, y, scale);
+    this._writeToBody({
+        x: x,
+        y: y,
+        scale: scale,
+        rotateX: rX,
+        rotateY: rY,
+        rotateZ: rZ
+    });
     this._active = true;
     zinjs.info.zoomArea = this;
 };
@@ -409,14 +435,7 @@ zinjs.ZoomArea.prototype.zoomOut = function()
 {
     this._active = false;
     zinjs.info.zoomArea = null;
-    // FIX
-    // if (this._ancestor !== null) {
-    //     this._ancestor.zoomIn();
-    // }
-    // else {
-    // var scrollOffset = zinjs.util.getScrollOffset();
-    this._writeToBody(0, 0, 0, 0, 1);
-// }
+    this._writeToBody();
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -624,8 +643,8 @@ zinjs.util.getScrollOffset = function ()
 };
 
 zinjs.util.computeWindowScale = function ( config ) {
-    var hScale = window.innerHeight / config.height,
-        wScale = window.innerWidth / config.width,
+    var hScale = zinjs.info.height / config.height,
+        wScale = zinjs.info.width / config.width,
         scale = hScale > wScale ? wScale : hScale;
 
     if (config.maxScale && scale > config.maxScale) {
@@ -656,55 +675,76 @@ $(window).bind("resize", windowResized);
 $(document).ready(function() {
 
     if (zinjs.info.initialized === false) {
-    zinjs.info.canvasScale = $('#canvas1');
-    zinjs.info.canvasTranslate = $('#canvas2');
-    $('body').css({
-        height: "100%",
-        overflow: "hidden"
-    });
-    zinjs.info.canvasScale.css({
-        position: "absolute",
-        transformOrigin: "top left",
-        transition: "all 0s ease-in-out",
-        transformStyle: "preserve-3d",
-        top: "50%",
-        left: "50%"
-    });
-    zinjs.info.canvasTranslate.css({
-        position: "absolute",
-        transformOrigin: "top left",
-        transition: "all 0s ease-in-out",
-        transformStyle: "preserve-3d"
-    });
+        zinjs.info.canvasScale = $('#canvas1');
+        zinjs.info.canvasTranslate = $('#canvas2');
+        $('body').css({
+            height: "100%",
+            overflow: "hidden"
+        });
+        zinjs.info.canvasScale.css({
+            position: "absolute",
+            transformOrigin: "top left",
+            transition: "all 0s ease-in-out",
+            transformStyle: "preserve-3d",
+            transitionProperty: 'all',
+            transitionDuration: '0.8s',
+            transitionTimingFunction: 'ease',
+            transitionDelay: '0s',
+            top: "50%",
+            left: "50%"
+        });
+        zinjs.info.canvasTranslate.css({
+            position: "absolute",
+            transformOrigin: "top left",
+            transition: "all 0s ease-in-out",
+            transformStyle: "preserve-3d",
+            transitionProperty: 'all',
+            transitionDuration: '1s',
+            transitionTimingFunction: 'ease',
+            transitionDelay: '0.2s'
+        });
 
-    var windowScale = zinjs.util.computeWindowScale( zinjs.info.config );
+        var windowScale = zinjs.util.computeWindowScale( zinjs.info.config );
 
-    zinjs.info.canvasScale.css({
-        transform: 'perspective(' + zinjs.info.config.perspective/windowScale + ') scale(' + windowScale + ')'
-    });
+        zinjs.info.canvasScale.css({
+            transform: 'perspective(' + zinjs.info.config.perspective/windowScale + ') scale(' + windowScale + ')'
+        });
 
-    zinjs.info.initialized = true;
+        zinjs.info.initialized = true;
     }
 
-
-    var idZoomArea = 0;
+    // PRECHOD MEZI ZOOMAREAS
     $("body").keydown(function(e) {
-    if(e.keyCode == 37) { // left
-        console.log('left');
-        if (idZoomArea === 0) {
-        idZoomArea = zinjs.info.zoomAreas.length-1;
+        if(zinjs.info.zoomArea === null) {
+            if(zinjs.info.zoomAreas.length > 0) {
+                zinjs.info.zoomAreas[0].zoomIn();
+            }
         }
         else {
-        idZoomArea--;
+            var moment = zinjs.info.zoomArea.id;
+            if(e.keyCode == 37) { // left
+                console.log('left');
+                if (moment === 0) {
+                    moment = zinjs.info.zoomAreas.length-1;
+                }
+                else {
+                    moment--;
+                }
+                zinjs.info.zoomAreas[moment % zinjs.info.zoomAreas.length].zoomIn();
+            }
+            else if(e.keyCode == 39) { // right
+                console.log('right');
+                var idNext = (++moment) % zinjs.info.zoomAreas.length;
+                zinjs.info.zoomAreas[idNext].zoomIn();
+            }
         }
-        zinjs.info.zoomAreas[idZoomArea % zinjs.info.zoomAreas.length].zoomIn();
-    }
-    else if(e.keyCode == 39) { // right
-        console.log('right');
-        var idNext = (++idZoomArea) % zinjs.info.zoomAreas.length;
-        zinjs.info.zoomAreas[idNext].zoomIn();
-    }
-    console.log(idZoomArea);
+    });
+
+    $("body").keydown(function(e) {
+        if(e.keyCode == 27) { // esc
+            console.log('esc');
+            zinjs.info.zoomArea.zoomOut();
+        }
     });
 
 });

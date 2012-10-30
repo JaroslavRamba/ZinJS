@@ -24,6 +24,11 @@
     <img src="./img/logo.png" alt="zinjs" id="logo" />
 
 
+    <div style="position: absolute; left: 500px">
+      <p><strong>ZoomAreas</strong> - <a href="zoomAreas.html">zoomAreas.html</a> </p>
+      <p> esc (zoomOut), arrow-left, arrow-right (pohyb mezi slajdy), klik na jakýkoliv ho nazoomuje + dá se použít left, right</p>
+      <p>Psáno na Chrome zatím..</p>
+    </div>
     <div id="box">
       <div class="title">
         <h1>ZinJS</h1>
@@ -150,10 +155,6 @@
         $('.tile').each(function() {
           $(this).attr('id', id);
           zoomArea = new zinjs.Container('#'+id, tileStyle);
-          // zoomArea.click(function(event) {
-          //   event.preventDefault();
-          //   event.data.cmp.zoomIn();
-          // });
           zoomArea.hover(function(event) {
             event.data.cmp.addCss({ // BUG - temer nemozne na div "najet" - spustit hover
                 transform: {
