@@ -455,6 +455,7 @@ zinjs.MultiScaleImage = function(selector, style, images)
         var tmp=document.createElement('img');
             this._node[0].appendChild(tmp);
           this.image=new zinjs.Container(selector+' img', style);
+          this.image._node[0].src=this.images[0].url;
       }
         
     node.scale=1;
