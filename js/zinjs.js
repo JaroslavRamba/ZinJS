@@ -783,9 +783,9 @@ $(window).keydown(function(e) {
 
 // EXPERIMENTAL MOUSE MOVE
 $(document).ready(function() {
-    var mouseX = 0,
-    mouseY = 0,
-    leftButtonDown = false;
+    var mouseX = 0;
+    var mouseY = 0;
+    var leftButtonDown = false;
 
     $(document).mousedown(function(e){
         if(e.which === 1) {
@@ -795,20 +795,16 @@ $(document).ready(function() {
             mouseY = e.clientY;
         }
     });
-    $(document).mouseup(function(e){
-        if(e.which === 1) leftButtonDown = false;
-    });
 
-    $(document).mousemove(function(e) {
-        if (leftButtonDown) {
+    $(document).mouseup(function(e){
+        if(e.which === 1 && leftButtonDown) {
+            leftButtonDown = false;
             var xCh = mouseX -  e.clientX;
             var yCh = mouseY - e.clientY ;
             var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
             var transArr = trans.split(',');
             var xx = parseInt(transArr[0], 10);
             var yy = parseInt(transArr[1], 10);
-            mouseX = e.clientX;
-            mouseY = e.clientY;
 
             // console.log("change ( " + xCh + ", " + yCh + " )");
             // console.log("prev ( " + xx + ", " + yy + " )");
