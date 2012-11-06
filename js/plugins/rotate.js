@@ -1,8 +1,8 @@
 new zinjs.core.PluginPrototype(
-	"rotate",
-	zinjs.core.pluginType.ACTION,
-	function(angle, x, y, z)
-	{
+    "rotate",
+    zinjs.core.pluginType.ACTION,
+    function(angle, x, y, z)
+    {
         switch(arguments.length) {
             case 0:
                 this.addCss({
@@ -28,6 +28,6 @@ new zinjs.core.PluginPrototype(
             default:
                 console.log("Bad parameters for set rotate!");
         }
-	}
+    }
 );
 
