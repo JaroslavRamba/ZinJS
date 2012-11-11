@@ -161,16 +161,16 @@ zinjs.core.loadPlugin =  function(pluginPath)
         if (plugin instanceof zinjs.core.PluginPrototype && !zinjs.core.isPluginLoaded(plugin)) {
             switch(plugin.type) {
                 case zinjs.core.pluginType.ACTION:
-                eval("zinjs.AbstractComponent.prototype." + plugin.name + " = plugin.content");
-                break;
+                    eval("zinjs.AbstractComponent.prototype." + plugin.name + " = plugin.content");
+                    break;
                 case zinjs.core.pluginType.COMPONENT:
-                eval(plugin.content.name + " = plugin.content");
-                plugin.content.prototype = new zinjs.AbstractComponent();
-                break;
+                    eval(plugin.content.name + " = plugin.content");
+                    plugin.content.prototype = new zinjs.AbstractComponent();
+                    break;
                 case zinjs.core.pluginType.EVENT:
-                eval("zinjs.AbstractComponent.prototype." + plugin.name + " = null");
-                eval(plugin.content + "(zinjs.AbstractComponent.prototype)");
-                break;
+                    eval("zinjs.AbstractComponent.prototype." + plugin.name + " = null");
+                    eval(plugin.content + "(zinjs.AbstractComponent.prototype)");
+                    break;
             }
             zinjs.core.plugins.push(plugin);
         }
@@ -219,8 +219,8 @@ zinjs.info.isMobile = (function(){
         navigator.userAgent.match(/webOS/i) ||
         navigator.userAgent.match(/BlackBerry/i)) {
         return true;
-}
-return false;
+    }
+    return false;
 })();
 
 zinjs.info.config = {
@@ -377,6 +377,66 @@ zinjs.AbstractComponent.prototype.click = function(handler)
     return this;
 };
 
+zinjs.AbstractComponent.prototype.move = function(handler)
+{
+    this._node.off('mousemove');
+    if (arguments.length === 1) {
+        this._node.on('mousemove', {
+            cmp: this
+        }, handler);
+    }
+    return this;
+};
+
+zinjs.AbstractComponent.prototype.doubleClick = function(handler)
+{
+    this._node.off('dblclick');
+    if (arguments.length === 1) {
+        this._node.on('dblclick', {
+            cmp: this
+        }, handler);
+    }
+    return this;
+};
+
+zinjs.AbstractComponent.prototype.wheel = function()
+{
+    //TODO
+    var tmp = function() {
+        if (!event){
+            event = window.event;
+        }
+        
+        
+        
+        if (event.wheelDelta) {
+            delta = event.wheelDelta / 60;
+        } else if (event.detail) {
+            delta = -event.detail / 2;
+        }
+
+        if (delta >= 0) {
+            wheelTop();
+            console.log('Scroll up');
+        }
+        else {
+            //eval(arguments[1]);
+            console.log('Scroll down');
+        }
+    }
+    
+    tmp.wheelTop = arguments[0];
+    tmp.wheelDown = arguments[1];
+    
+    this._node.off('mousewheel DOMMouseScroll');
+    this._node.on('mousewheel DOMMouseScroll', {
+        cmp: this
+    }, tmp);
+    return this;
+    
+
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Container ////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -434,13 +494,28 @@ zinjs.ZoomArea.prototype._init = function(x, y)
 
 zinjs.ZoomArea.prototype._writeToCanvases = function(properties)
 {
-    if (properties === null || properties === undefined) {properties = {};}
-    if (properties.x === null || properties.x === undefined || isNaN(properties.x)) {properties.x = 0;}
-    if (properties.y === null || properties.y === undefined || isNaN(properties.y)) {properties.y = 0;}
-    if (properties.scale === null || properties.scale === undefined || isNaN(properties.scale)) {properties.scale = 1;}
-    if (properties.rotateX === null || properties.rotateX === undefined || isNaN(properties.rotateX)) {properties.rotateX = 0;}
-    if (properties.rotateY === null || properties.rotateY === undefined || isNaN(properties.rotateY)) {properties.rotateY = 0;}
-    if (properties.rotateZ === null || properties.rotateZ === undefined || isNaN(properties.rotateZ)) {properties.rotateZ = 0;}
+    if (properties === null || properties === undefined) {
+        properties = {};
+    
+    }
+    if (properties.x === null || properties.x === undefined || isNaN(properties.x)) {
+        properties.x = 0;
+    }
+    if (properties.y === null || properties.y === undefined || isNaN(properties.y)) {
+        properties.y = 0;
+    }
+    if (properties.scale === null || properties.scale === undefined || isNaN(properties.scale)) {
+        properties.scale = 1;
+    }
+    if (properties.rotateX === null || properties.rotateX === undefined || isNaN(properties.rotateX)) {
+        properties.rotateX = 0;
+    }
+    if (properties.rotateY === null || properties.rotateY === undefined || isNaN(properties.rotateY)) {
+        properties.rotateY = 0;
+    }
+    if (properties.rotateZ === null || properties.rotateZ === undefined || isNaN(properties.rotateZ)) {
+        properties.rotateZ = 0;
+    }
 
     zinjs.info.canvasTranslate.addCss({
         transform: {
@@ -477,11 +552,11 @@ zinjs.ZoomArea.prototype.zoomIn = function()
     // var optsc = Math.max( Math.min( zinjs.info.width / width, zinjs.info.height / height ), 1 );
     if (sc !== null && sc !== undefined && !isNaN(sc)) {
         scale = (1/sc) * zinjs.util.computeWindowScale(zinjs.info.config);
-        // scale = (1/sc) * optsc;
+    // scale = (1/sc) * optsc;
     }
     else {
         scale = zinjs.util.computeWindowScale(zinjs.info.config);
-        // scale = optsc;
+    // scale = optsc;
     }
 
     this._writeToCanvases({
@@ -546,10 +621,14 @@ zinjs.MultiScaleImage = function(selector, style, images)
     var events = new Array("transitionEnd","webkitTransitionEnd","msTransitionEnd","transitionend","oTransitionEnd");
     for(var i = 0;i<events.length;i++) {
         node.image._node[0].addEventListener(events[i],function(e) {
-            node.image.addCss({transitionDuration: '0s'});
-            node.image.addCss({transform: {
-                scale: 1
-            }});
+            node.image.addCss({
+                transitionDuration: '0s'
+            });
+            node.image.addCss({
+                transform: {
+                    scale: 1
+                }
+            });
             node.image._node[0].src = node.nextimg;
         }, false);
     }
@@ -563,10 +642,14 @@ zinjs.MultiScaleImage.prototype.zoomLevel = function(level)
     var imgarg = this.images[level-1];
     this.nextimg = imgarg.url;
     var scale = this.scale;
-    this.image.addCss({transitionDuration: '1.2s'});
-    this.image.addCss({transform: {
-        scale: imgarg.scale/scale
-    }});
+    this.image.addCss({
+        transitionDuration: '1.2s'
+    });
+    this.image.addCss({
+        transform: {
+            scale: imgarg.scale/scale
+        }
+    });
     this.scale = imgarg.scale;
 };
 
