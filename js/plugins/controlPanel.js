@@ -237,15 +237,20 @@ new zinjs.core.PluginPrototype(
                     }
                 });
                  zinjs.info.canvasTranslate.rotate( 0, 0, 0, 1);
+                 zinjs.info.zoomArea.zoomOut();
                  e.preventDefault();
             }
             function presentationLeftClick(e){
-                console.log( "TODO presentation Left Click");
+                ek = $.Event('keydown');
+                ek.keyCode = 37;
+                $(window).trigger(ek);
                  e.preventDefault();
             }
             function presentationRightClick(e){
-                console.log( "TODO presentation Right Click");
-                 e.preventDefault();
+                ek = $.Event('keydown');
+                ek.keyCode = 39;
+                $(window).trigger(ek);
+                e.preventDefault();
             }
             
             
