@@ -35,3 +35,113 @@ h1 {
     color: silver;
     text-align: center;
 }
+
+/*control panel styles*/
+.controlPanel {
+    width: 142px;
+    height: 250px;
+}
+.controlPanel .homeButton{
+    position: absolute;
+    width: 21px;
+    height: 22px;
+    left: 62px;
+    top: 59px;
+    background-image: url('../img/controlPanel/homeButton.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .rotate{
+    position: absolute;
+    width: 142px;
+    height: 142px;
+    background-image: url('../img/controlPanel/rotate.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .arrows {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top:20px;
+    right: 20px;
+}
+.controlPanel .arrows .up{
+    position: absolute;
+    width: 15px;
+    height: 17px;
+    top: 10px;
+    left: 41px;
+    background-image: url('../img/controlPanel/arrowUp.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .arrows .down{
+    position: absolute;
+    width: 17px;
+    height: 15px;
+    bottom: 10px;
+    left: 42px;
+    background-image: url('../img/controlPanel/arrowDown.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .arrows .left{
+    position: absolute;
+    width: 14px;
+    height: 17px;
+    top: 41px;
+    left: 10px;
+    background-image: url('../img/controlPanel/arrowLeft.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .arrows .right{
+    position: absolute;
+    width: 15px;
+    height: 17px;
+    top: 41px;
+    right: 10px;
+    background-image: url('../img/controlPanel/arrowRight.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .presentationArrows {
+    position: absolute;
+    width: 60px;
+    height: 17px;
+    left: 44px;
+    top: 150px;
+}
+.controlPanel .presentationArrows .left{
+    position: absolute;
+    width: 27px;
+    height: 17px;
+    left:0px;
+    background-image: url('../img/controlPanel/presentationLeft.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .presentationArrows .right{
+    position: absolute;
+    width: 27px;
+    height: 17px;
+    right:0px;
+    background-image: url('../img/controlPanel/presentationRight.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .zoomSlider {
+    position: absolute;
+    height: 150px;
+    left: 70px;
+    top: 190px;
+}
+/*slider css - copy from jQuery UI*/
+.ui-slider { position: relative; text-align: left; }
+.ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0; }
+
+.ui-slider-horizontal { height: .8em; }
+.ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; }
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+.ui-slider-horizontal .ui-slider-range-min { left: 0; }
+.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+
+.ui-slider-vertical { width: .8em; height: 100px; background-image: url('../img/controlPanel/sliderBack.png'); background-repeat: repeat-y;}
+.ui-slider-vertical .ui-slider-handle { left: -6px; margin-left: 0; margin-bottom: -.6em; background-image: url('../img/controlPanel/sliderPan.png'); background-repeat: no-repeat; background-position-y: 7px}
+.ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
+.ui-slider-vertical .ui-slider-range-min { bottom: 0; }
+.ui-slider-vertical .ui-slider-range-max { top: 0; }
