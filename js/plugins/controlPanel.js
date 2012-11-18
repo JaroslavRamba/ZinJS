@@ -276,9 +276,7 @@ new zinjs.core.PluginPrototype(
                 var mouse_x = e.pageX;
                 var mouse_y = e.pageY;
                 var radians = Math.atan2(mouse_x - rotateCenter.x, mouse_y - rotateCenter.y);
-                var degree = (radians * (180 / Math.PI) * -1) + 100 ;
-                //window.console.log("de="+degree+","+radians);
-                
+                var degree = (radians * (180 / Math.PI) * -1) + 180 ;
                 var rotatePanel = new zinjs.Container(control);
                 rotatePanel.rotate( degree, 0, 0, 1);
                 
