@@ -44,8 +44,11 @@ zinjs.core.init = function()
             transitionTimingFunction: 'ease'
         });
 
-        zinjs.info.canvasScale = new zinjs.Container('#canvas1', style);
-        zinjs.info.canvasTranslate = new zinjs.Container('#canvas2', style);
+        var canvasScale = $('<div id="zinjsScale"></div>').prependTo($('body'));
+        $('#zinjs').attr('id', 'zinjsTranslate').prependTo(canvasScale);
+
+        zinjs.info.canvasScale = new zinjs.Container('#zinjsScale', style);
+        zinjs.info.canvasTranslate = new zinjs.Container('#zinjsTranslate', style);
 
         zinjs.info.canvasScale.addCss({
             top: "50%",
@@ -407,8 +410,6 @@ zinjs.AbstractComponent.prototype.wheel = function()
             event = window.event;
         }
 
-
-
         if (event.wheelDelta) {
             delta = event.wheelDelta / 60;
         } else if (event.detail) {
@@ -423,7 +424,7 @@ zinjs.AbstractComponent.prototype.wheel = function()
             //eval(arguments[1]);
             console.log('Scroll down');
         }
-    }
+    };
 
     tmp.wheelTop = arguments[0];
     tmp.wheelDown = arguments[1];
@@ -432,9 +433,8 @@ zinjs.AbstractComponent.prototype.wheel = function()
     this._node.on('mousewheel DOMMouseScroll', {
         cmp: this
     }, tmp);
+
     return this;
-
-
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -456,8 +456,6 @@ zinjs.createContainer = function(selector, style)
 /////////////////////////////////////////////////////////////////////////////////////////
 // ZoomArea /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
-
-// DOING - EXPERIMENTALNI
 
 zinjs.ZoomArea = function(id, style, x, y)
 {
@@ -539,9 +537,7 @@ zinjs.ZoomArea.prototype.zoomIn = function()
     if (zinjs.info.zoomArea !== null) {
         zinjs.info.zoomArea._active = false;
     }
-    // var elemRect = this._elem.getBoundingClientRect();
-    // var width = elemRect.width;
-    // var height = elemRect.height ;
+
     var x = this.x;
     var y = this.y;
     var scale;
@@ -549,14 +545,11 @@ zinjs.ZoomArea.prototype.zoomIn = function()
     var rX = parseInt(this._styles._css['transform']['rotateX'], 10);
     var rY = parseInt(this._styles._css['transform']['rotateY'], 10);
     var rZ = parseInt(this._styles._css['transform']['rotateZ'], 10);
-    // var optsc = Math.max( Math.min( zinjs.info.width / width, zinjs.info.height / height ), 1 );
     if (sc !== null && sc !== undefined && !isNaN(sc)) {
         scale = (1/sc) * zinjs.util.computeWindowScale(zinjs.info.config);
-    // scale = (1/sc) * optsc;
     }
     else {
         scale = zinjs.util.computeWindowScale(zinjs.info.config);
-    // scale = optsc;
     }
 
     this._writeToCanvases({
@@ -656,24 +649,6 @@ zinjs.MultiScaleImage.prototype.zoomLevel = function(level)
 zinjs.createMultiScaleImage = function(selector, style)
 {
     return new zinjs.MultiScaleImage(selector, style);
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// ControlPanel /////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-// TODO
-
-zinjs.ControlPanel = function(selector, style)
-{
-    zinjs.AbstractComponent.call(this, selector, style);
-};
-
-zinjs.ControlPanel.extend(zinjs.AbstractComponent);
-
-zinjs.createControlPanel = function(selector, style)
-{
-    return new zinjs.ControlPanel(selector, style);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -794,14 +769,6 @@ zinjs.util.clone = function(object)
     return temp;
 };
 
-zinjs.util.getScrollOffset = function ()
-{
-    return {
-        x: window.scrollX !== undefined ? window.scrollX : window.pageXOffset,
-        y: window.scrollY !== undefined ? window.scrollY : window.pageXYffset
-    };
-};
-
 zinjs.util.computeWindowScale = function ( config ) {
     var hScale = zinjs.info.height / config.height,
     wScale = zinjs.info.width / config.width,
@@ -830,6 +797,8 @@ function windowResized()
     zinjs.info.width = $(window).width();
     zinjs.info.config.width = zinjs.info.width - 30;
     zinjs.info.config.height = zinjs.info.height - 30;
+
+    zinjs.info.zoomArea.zoomIn();
 }
 
 $(window).bind("resize", windowResized);
