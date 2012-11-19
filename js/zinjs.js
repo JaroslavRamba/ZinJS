@@ -54,11 +54,15 @@ zinjs.core.init = function()
             top: "50%",
             left: "50%",
             transitionDuration: '0.8s',
-            transitionDelay: '0.2s'
+            transitionDelay: '0.2s',
+            transformOrigin: '50% 50%'
         });
         zinjs.info.canvasTranslate.addCss({
+            top: "0%",
+            left: "0%",
             transitionDuration: '1s',
-            transitionDelay: '0s'
+            transitionDelay: '0s',
+            transformOrigin: '50% 50%'
         });
 
         var windowScale = zinjs.util.computeWindowScale(zinjs.info.config);
@@ -211,7 +215,6 @@ zinjs.core.loadPlugin =  function(pluginPath)
 /////////////////////////////////////////////////////////////////////////////////////////
 
 zinjs.info.width = $(window).width();
-
 zinjs.info.height = $(window).height();
 
 zinjs.info.isMobile = (function(){
@@ -227,12 +230,11 @@ zinjs.info.isMobile = (function(){
 })();
 
 zinjs.info.config = {
-    width: zinjs.info.width - 30,
-    height: zinjs.info.height -30,
+    width: 1024,
+    height: 768,
     maxScale: 1,
     minScale: 0,
-    perspective: 1000,
-    transitionDuration: 1000
+    perspective: 1000
 };
 
 zinjs.info.initialized = false;
@@ -516,18 +518,21 @@ zinjs.ZoomArea.prototype._writeToCanvases = function(properties)
     }
 
     zinjs.info.canvasTranslate.addCss({
+        transitionDuration: '1s',
         transform: {
-            translate: -properties.x + 'px,' + -properties.y +'px',
-            rotateX: -properties.rotateX + 'deg',
-            rotateY: -properties.rotateY + 'deg',
-            rotateZ: -properties.rotateZ + 'deg'
+            translate: -properties.x + 'px,' + -properties.y +'px'
         }
     });
 
     zinjs.info.canvasScale.addCss({
+        transitionDuration: '0.8s',
+        transitionDelay: '0.2s',
         transform: {
             perspective: zinjs.info.config.perspective / properties.scale,
-            scale: properties.scale
+            scale: properties.scale,
+            rotateX: -properties.rotateX + 'deg',
+            rotateY: -properties.rotateY + 'deg',
+            rotateZ: -properties.rotateZ + 'deg'
         }
     });
 };
@@ -545,6 +550,7 @@ zinjs.ZoomArea.prototype.zoomIn = function()
     var rX = parseInt(this._styles._css['transform']['rotateX'], 10);
     var rY = parseInt(this._styles._css['transform']['rotateY'], 10);
     var rZ = parseInt(this._styles._css['transform']['rotateZ'], 10);
+
     if (sc !== null && sc !== undefined && !isNaN(sc)) {
         scale = (1/sc) * zinjs.util.computeWindowScale(zinjs.info.config);
     }
@@ -569,6 +575,18 @@ zinjs.ZoomArea.prototype.zoomOut = function()
     this._active = false;
     zinjs.info.zoomArea = null;
     this._writeToCanvases();
+};
+
+zinjs.ZoomArea.prototype.prev = function()
+{
+    var i = (this.id - 1).mod(zinjs.info.zoomAreas.length);
+    zinjs.info.zoomAreas[i].zoomIn();
+};
+
+zinjs.ZoomArea.prototype.next = function()
+{
+    var i = (this.id + 1).mod(zinjs.info.zoomAreas.length);
+    zinjs.info.zoomAreas[i].zoomIn();
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -770,9 +788,9 @@ zinjs.util.clone = function(object)
 };
 
 zinjs.util.computeWindowScale = function ( config ) {
-    var hScale = zinjs.info.height / config.height,
-    wScale = zinjs.info.width / config.width,
-    scale = hScale > wScale ? wScale : hScale;
+    var hScale = zinjs.info.height / config.height;
+    var wScale = zinjs.info.width / config.width;
+    var scale = hScale > wScale ? wScale : hScale;
 
     if (config.maxScale && scale > config.maxScale) {
         scale = config.maxScale;
@@ -791,44 +809,37 @@ zinjs.util.computeWindowScale = function ( config ) {
 // listeners ////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
+// RESIZE PROHLIZECE
 function windowResized()
 {
-    zinjs.info.height = $(window).height();
     zinjs.info.width = $(window).width();
-    zinjs.info.config.width = zinjs.info.width - 30;
-    zinjs.info.config.height = zinjs.info.height - 30;
-
-    zinjs.info.zoomArea.zoomIn();
+    zinjs.info.height = $(window).height();
+    if (zinjs.info.zoomArea) {
+        zinjs.info.zoomArea.zoomIn();
+    }
 }
 
 $(window).bind("resize", windowResized);
 
+// ZAVOLANI INICIALIZACE
 $(document).ready(function() {
     zinjs.core.init();
 });
 
 // EXPERIMENTAL KEYDOWN FOR ZOOMAREAS
 $(window).keydown(function(e) {
-    if(e.keyCode === 27) {
-        zinjs.info.zoomArea.zoomOut();
-    }
-    else if(e.keyCode === 37 || e.keyCode === 39) {
-        if(zinjs.info.zoomArea === null) {
-            if(zinjs.info.zoomAreas.length > 0) {
-                zinjs.info.zoomAreas[0].zoomIn();
-            }
+    if(e.keyCode === 27 || e.keyCode === 37 || e.keyCode === 39) {
+        if(zinjs.info.zoomArea === null && zinjs.info.zoomAreas.length > 0) {
+            zinjs.info.zoomAreas[0].zoomIn();
         }
-        else {
-            var i = zinjs.info.zoomArea.id;
-            var length = zinjs.info.zoomAreas.length;
-            if(e.keyCode == 37) { // left
-                i = (--i).mod(length);
-                zinjs.info.zoomAreas[i].zoomIn();
-            }
-            else if(e.keyCode == 39) { // right
-                i = (++i).mod(length);
-                zinjs.info.zoomAreas[i].zoomIn();
-            }
+        if(e.keyCode == 37) { // left
+            zinjs.info.zoomArea.prev();
+        }
+        if(e.keyCode == 39) { // right
+            zinjs.info.zoomArea.next();
+        }
+        if(e.keyCode == 27) { // esc
+            zinjs.info.zoomArea.zoomOut();
         }
     }
 });
@@ -851,22 +862,44 @@ $(document).ready(function() {
     $(document).mouseup(function(e){
         if(e.which === 1 && leftButtonDown) {
             leftButtonDown = false;
-            var xCh = mouseX -  e.clientX;
-            var yCh = mouseY - e.clientY ;
+        }
+    });
+
+    $(document).mousemove(function(e){
+        if(leftButtonDown) {
             var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
+            var sc = zinjs.info.canvasScale._styles._css['transform']['scale'];
+
             var transArr = trans.split(',');
             var xx = parseInt(transArr[0], 10);
             var yy = parseInt(transArr[1], 10);
 
-            // console.log("change ( " + xCh + ", " + yCh + " )");
-            // console.log("prev ( " + xx + ", " + yy + " )");
-            // console.log("next ( " + (xx + xCh) + ", " + (yy + yCh) + " )");
+            var xCh = (mouseX - e.clientX) / sc;
+            var yCh = (mouseY - e.clientY) / sc;
+
+            if (xCh > 0) {
+                xCh = Math.ceil(xCh);
+            }
+            if (0 > xCh) {
+                xCh = Math.floor(xCh);
+            }
+
+            if (yCh > 0) {
+                yCh = Math.ceil(yCh);
+            }
+            if (0 > yCh) {
+                yCh = Math.floor(yCh);
+            }
 
             zinjs.info.canvasTranslate.addCss({
+                transitionDuration: '0s',
                 transform: {
                     translate: (xx - xCh) + 'px,' + (yy - yCh) +'px'
                 }
             });
+
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         }
     });
 });
