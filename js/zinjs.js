@@ -406,9 +406,9 @@ zinjs.AbstractComponent.prototype.wheel = function()
         if (!event){
             event = window.event;
         }
-        
-        
-        
+
+
+
         if (event.wheelDelta) {
             delta = event.wheelDelta / 60;
         } else if (event.detail) {
@@ -424,16 +424,16 @@ zinjs.AbstractComponent.prototype.wheel = function()
             console.log('Scroll down');
         }
     }
-    
+
     tmp.wheelTop = arguments[0];
     tmp.wheelDown = arguments[1];
-    
+
     this._node.off('mousewheel DOMMouseScroll');
     this._node.on('mousewheel DOMMouseScroll', {
         cmp: this
     }, tmp);
     return this;
-    
+
 
 };
 
@@ -496,7 +496,7 @@ zinjs.ZoomArea.prototype._writeToCanvases = function(properties)
 {
     if (properties === null || properties === undefined) {
         properties = {};
-    
+
     }
     if (properties.x === null || properties.x === undefined || isNaN(properties.x)) {
         properties.x = 0;
