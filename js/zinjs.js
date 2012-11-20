@@ -407,6 +407,11 @@ zinjs.AbstractComponent.prototype.doubleClick = function(handler)
 zinjs.AbstractComponent.prototype.wheel = function()
 {
     //TODO
+    
+    
+    var wheelTop = arguments[0];
+    var wheelDown = arguments[1];
+    
     var tmp = function() {
         if (!event){
             event = window.event;
@@ -423,17 +428,15 @@ zinjs.AbstractComponent.prototype.wheel = function()
             console.log('Scroll up');
         }
         else {
-            //eval(arguments[1]);
+            wheelDown();
             console.log('Scroll down');
         }
     };
 
-    tmp.wheelTop = arguments[0];
-    tmp.wheelDown = arguments[1];
 
     this._node.off('mousewheel DOMMouseScroll');
     this._node.on('mousewheel DOMMouseScroll', {
-        cmp: this
+       cmp: this
     }, tmp);
 
     return this;
