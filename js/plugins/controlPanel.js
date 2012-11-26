@@ -281,7 +281,7 @@ new zinjs.core.PluginPrototype(
                 rotatePanel.rotate( degree, 0, 0, 1);
 
                 // zinjs.info.canvasTranslate.rotate( degree, 0, 0, 1);
-                zinjs.info.canvasScale.addCss({
+                zinjs.info.canvasTranslate.addCss({
                     transitionDuration: '0s',
                     transitionDelay: '0s',
                     transform: {
