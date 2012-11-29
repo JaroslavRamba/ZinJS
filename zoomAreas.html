@@ -1,156 +1,158 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='cs' lang='cs'>
-    <head>
-        <!-- XHTML Specification -->
-        <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
-        <meta http-equiv='Content-Language' content='cs' />
-        <meta name='robots' content='index,follow' />
-        <meta name='copyright' content='© 2012' />
+	<head>
+		<!-- XHTML Specification -->
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+		<meta http-equiv='Content-Language' content='cs' />
+		<meta name='robots' content='index,follow' />
+		<meta name='copyright' content='© 2012' />
 
-        <title>ZinJS</title>
+		<title>ZinJS</title>
 
-        <!-- Web style -->
-        <link rel='stylesheet' type='text/css' href='./css/style.css' media='screen,projection,tv' />
+		<!-- Web style -->
+		<link rel='stylesheet' type='text/css' href='./css/style.css' media='screen,projection,tv' />
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
-        <script src="./js/zinjs.js" type="text/javascript"></script>
-
-
-        <link href='http://fonts.googleapis.com/css?family=Averia+Libre' rel='stylesheet' type='text/css'/>
-    </head>
-
-    <body>
-        <div id="zinjs">
-            <div class="tile">
-                <p><strong>ZinJS</strong> is a new javascript and css based library which create art from you website.</p>
-            </div>
-            <div class="tile">
-                <p><strong>How it works?</strong> It is simple. Just download library from Github and link zinjs.js into your source code.</p>
-            </div>
-            <div class="tile">
-                <p><strong>It is free?</strong> Yes, it's completely free. You can use, redistribuate or change library even in commercial projects. ZinJS is distribuated under new BSD licence. You must only keep copyright marks inside source code of library.</p>
-            </div>
-            <div class="tile">
-                <p><strong>What I can do with library?</strong> The only limit is your imagination. You can create website based on "zooming" of content or rotating or something else...</p>
-            </div>
-            <div class="tile">
-                <p><strong>Documentation</strong> We will add documentation on this site as soon as possible. In a meanwhile you can follow us on Github. Github also provide bug report form.</p>
-            </div>
-            <div class="tile">
-                <p><strong>Prototype</strong> Please note that ZinJS is still prototype so it's still under development. Some features may be altered.</p>
-            </div>
-        </div>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
+		<script src="./js/zinjs.js" type="text/javascript"></script>
 
 
-        <script>
-            $(document).ready(function()
-            {
-                // PLUGINS
-                zinjs.core.loadPlugin("js/plugins/testplugin");
-                zinjs.core.loadPlugin("js/plugins/debug-action");
-                zinjs.core.loadPlugin("js/plugins/rotate");
-                zinjs.core.loadPlugin("js/plugins/zoom");
-                zinjs.core.loadPlugin("js/plugins/controlPanel");
+		<link href='http://fonts.googleapis.com/css?family=Averia+Libre' rel='stylesheet' type='text/css'/>
+	</head>
 
-                // STYLES
-                var tileStyle = new zinjs.Styles();
-                tileStyle.addCss({
-                    position: 'absolute',
-                    top: '0px',
-                    left: '0px',
-                    width: '200px',
-                    marginRight: '10px',
-                    marginBottom: '20px',
-                    padding: '5px',
-                    border: '2px dashed',
-                    transform: {
-                        translate: '-50%,-50%'
-                    },
-                    transformStyle: "preserve-3d",
-                    transitionProperty: 'all',
-                    transitionDuration: '0s',
-                    transitionTimingFunction: 'ease',
-                    transitionDelay: '0s'
-                });
+	<body>
+		<div id="zinjs">
+			<div class="tile">
+				<p><strong>ZinJS</strong> is a new javascript and css based library which create art from you website.</p>
+			</div>
+			<div class="tile">
+				<p><strong>How it works?</strong> It is simple. Just download library from Github and link zinjs.js into your source code.</p>
+			</div>
+			<div class="tile">
+				<p><strong>It is free?</strong> Yes, it's completely free. You can use, redistribuate or change library even in commercial projects. ZinJS is distribuated under new BSD licence. You must only keep copyright marks inside source code of library.</p>
+			</div>
+			<div class="tile">
+				<p><strong>What I can do with library?</strong> The only limit is your imagination. You can create website based on "zooming" of content or rotating or something else...</p>
+			</div>
+			<div class="tile">
+				<p><strong>Documentation</strong> We will add documentation on this site as soon as possible. In a meanwhile you can follow us on Github. Github also provide bug report form.</p>
+			</div>
+			<div class="tile">
+				<p><strong>Prototype</strong> Please note that ZinJS is still prototype so it's still under development. Some features may be altered.</p>
+			</div>
+		</div>
 
-                // COMPONENTS - CHILDREN, ANCESTORS
-                var id = 1;
-                $('.tile').each(function() {
-                    $(this).attr('id', id);
-                    id++;
-                });
 
-                var zoomArea1 = new zinjs.ZoomArea('#1', tileStyle, -500, 0);
-                zoomArea1.addCss({
-                    width: zinjs.info.width - 50 + 'px', // temp -> po resize okna nefunguje
-                    height: zinjs.info.height - 50 + 'px',
-                    transform: {
-                        scale: 0.1
-                    }
-                })
+		<script>
+			$(document).ready(function() {
+				zinjs.core.init();
+			});
+			$(document).ready(function()
+			{
+				// PLUGINS
+				zinjs.core.loadPlugin("js/plugins/testplugin");
+				zinjs.core.loadPlugin("js/plugins/debug-action");
+				zinjs.core.loadPlugin("js/plugins/rotate");
+				zinjs.core.loadPlugin("js/plugins/zoom");
+				zinjs.core.loadPlugin("js/plugins/controlPanel");
 
-                var zoomArea2 = new zinjs.ZoomArea('#2', tileStyle, 0, 500);
-                zoomArea2.addCss({
-                    width: '500px',
-                    transform: {
-                        scale: 2
-                    }
-                })
+				// STYLES
+				var tileStyle = new zinjs.Styles();
+				tileStyle.addCss({
+					position: 'absolute',
+					top: '0px',
+					left: '0px',
+					width: '200px',
+					marginRight: '10px',
+					marginBottom: '20px',
+					padding: '5px',
+					border: '2px dashed',
+					transform: {
+						translate: '-50%,-50%'
+					},
+					transformStyle: "preserve-3d",
+					transitionProperty: 'all',
+					transitionDuration: '0s',
+					transitionTimingFunction: 'ease',
+					transitionDelay: '0s'
+				});
 
-                var zoomArea3 = new zinjs.ZoomArea('#3', tileStyle, 0, 1000);
-                zoomArea3.addCss({
-                    transform: {
-                        scale: 3,
-                        rotateZ: '90deg'
-                    }
-                })
+				var id = 1;
+				$('.tile').each(function() {
+					$(this).attr('id', id);
+					id++;
+				});
 
-                var zoomArea4 = new zinjs.ZoomArea('#4', tileStyle, 1000, 0);
-                zoomArea4.addCss({
-                    transform: {
-                        scale: 4
-                    }
-                })
+				var zoomArea1 = new zinjs.ZoomArea('#1', tileStyle, 2000, 2500);
+				zoomArea1.addCss({
+					width: zinjs.info.width - 50 + 'px',
+					height: zinjs.info.height - 50 + 'px',
+					transform: {
+						scale: 0.1
+					}
+				})
 
-                var zoomArea5 = new zinjs.ZoomArea('#5', tileStyle, 1000, 1000);
-                zoomArea5.addCss({
-                    transform: {
-                        scale: 5
-                    }
-                })
+				var zoomArea2 = new zinjs.ZoomArea('#2', tileStyle, 0, 500);
+				zoomArea2.addCss({
+					width: '500px',
+					transform: {
+						scale: 2
+					}
+				})
 
-                var zoomArea6 = new zinjs.ZoomArea('#6', tileStyle, 2000, 2500);
-                zoomArea6.addCss({
-                    transform: {
-                        scale: 6
-                    }
-                })
-                var panel = new ControlPanel({
-                    position: {
-                        top: "10px",
-                        left: "10px"
-                    },
-                    zoom: "disabled"
-                });
+				var zoomArea3 = new zinjs.ZoomArea('#3', tileStyle, 0, 1000);
+				zoomArea3.addCss({
+					transform: {
+						scale: 3,
+						rotateZ: '90deg'
+					}
+				})
 
-                zoomArea6.wheel(function() {
-                    zinjs.info.canvasScale.addCss({
-                        transform: {
-                            perspective: zinjs.info.config.perspective/0.8,
-                            scale: 0.8
-                        }
-                    });
-                }, function() {
-                    zinjs.info.canvasScale.addCss({
-                        transform: {
-                            perspective: zinjs.info.config.perspective/0.1,
-                            scale: 0.1
-                        }
-                    });
-                });
-            });
-        </script>
-    </body>
+				var zoomArea4 = new zinjs.ZoomArea('#4', tileStyle, 1000, 0);
+				zoomArea4.addCss({
+					transform: {
+						scale: 4
+					}
+				})
+
+				var zoomArea5 = new zinjs.ZoomArea('#5', tileStyle, 1000, 1000);
+				zoomArea5.addCss({
+					transform: {
+						scale: 5
+					}
+				})
+
+				var zoomArea6 = new zinjs.ZoomArea('#6', tileStyle, 2000, 2500);
+				zoomArea6.addCss({
+					transform: {
+						scale: 6
+					}
+				})
+				var panel = new ControlPanel({
+					position: {
+						top: "10px",
+						left: "10px"
+					},
+					zoom: "disabled"
+				});
+
+				zoomArea6.wheel(function() {
+					zinjs.info.canvasScale.addCss({
+						transform: {
+							perspective: zinjs.info.config.perspective/0.8,
+							scale: 0.8
+						}
+					});
+				}, function() {
+					zinjs.info.canvasScale.addCss({
+						transform: {
+							perspective: zinjs.info.config.perspective/0.1,
+							scale: 0.1
+						}
+					});
+				});
+			});
+		</script>
+	</body>
 </html>
