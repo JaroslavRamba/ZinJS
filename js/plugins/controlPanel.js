@@ -17,7 +17,7 @@ new zinjs.core.PluginPrototype(
                 controlPanelId = 'controlPanel';
             }
             if( properties['position'] == null ){
-                properties.position = { top: "10px", left: "10px" };
+                properties.position = {top: "10px", left: "10px"};
             }
             if( properties['homeButton'] == null ){
                 properties.homeButton = 'enambled';
@@ -160,18 +160,70 @@ new zinjs.core.PluginPrototype(
                 _homeButton.onclick = homeButtonClick;
                 _divPanel.appendChild(_homeButton);
             }
-
+            
+            //render zoom slider panel
             if( properties.zoom == 'enambled') {
                 var _sliderContainer = document.createElement('div');
                 var _slider = document.createElement('div');
                 _sliderContainer.className = 'zoomSlider';
-                //TODO render jQuery UI component
-                $(_slider).slider({ orientation: "vertical" });
+                
+                $(_slider).slider({ 
+                    orientation: "vertical",
+                    slide: function( event, ui ) {}
+                });
                 _sliderContainer.appendChild(_slider);
+                
+                var allowZoom = false;
+                var zoomValue = 1;
+                function zoomuj( direction ){
+                    if(allowZoom ) {
+                        if(direction == 'IN') {
+                            zoomValue++;
+                        }
+                        else {
+                            zoomValue--;
+                        }
+                        $( _slider ).slider( "option", "value", zoomValue );
+                        setTimeout(function() {
+                            zoomuj(direction);
+                        },50);
+                        //console.log("zoom " + direction + " couter: " + zoomValue);
+                    }
+                }
+                function startZoom (e){
+                    allowZoom = true;
+                    e.preventDefault();
+                    var direction = 'OUT';
+                    if(e.target.className == 'zoomIn')
+                        direction = 'IN';
+                    zoomuj(direction);
+                }
+
+                var _buttonZoomIn = document.createElement('a');
+                _buttonZoomIn.className = 'zoomIn';
+                _buttonZoomIn.onmousedown = startZoom;
+                _buttonZoomIn.setAttribute('href', '#');
+                _sliderContainer.appendChild( _buttonZoomIn );
+                
+                var _buttonZoomOut = document.createElement('a');
+                _buttonZoomOut.className = 'zoomOut';
+                _buttonZoomOut.onmousedown = startZoom;
+                _buttonZoomOut.setAttribute('href', '#');
+                _sliderContainer.appendChild( _buttonZoomOut );
+                
+                //stop zooming
+                $('*').mouseup(function(e) {
+                    allowZoom = false;
+                });
+                
                 _divPanel.appendChild(_sliderContainer);
+                
+                //bind event "on slide"
+                $(_slider).on( "slide", function( event, ui ) { 
+                    var value = $( _slider ).slider( "value" );
+                    //console.log("slided " + value);
+                });
             }
-
-
 
             /*
              * Conrol panel events
@@ -230,7 +282,6 @@ new zinjs.core.PluginPrototype(
             }
 
             function homeButtonClick(e){
-                //TODO reset zoom
                 zinjs.info.canvasTranslate.addCss({
                     transform: {
                         translate: 0 + 'px,' + 0 + 'px'
@@ -243,13 +294,13 @@ new zinjs.core.PluginPrototype(
             function presentationLeftClick(e){
                 ek = $.Event('keydown');
                 ek.keyCode = 37;
-                $(window).trigger(ek);
-                 e.preventDefault();
+                $(document).trigger(ek);
+                e.preventDefault();
             }
             function presentationRightClick(e){
                 ek = $.Event('keydown');
                 ek.keyCode = 39;
-                $(window).trigger(ek);
+                $(document).trigger(ek);
                 e.preventDefault();
             }
 
@@ -263,16 +314,13 @@ new zinjs.core.PluginPrototype(
              **/
             var rotateCenter = {};
             function rotateOnMouse(e, control) {
-                //TODO smooth rotate and correct rotate
                 var offset = $(control).offset();
-                //window.console.log("left="+offset.left+"right="+offset.top);
-                //pocitani stredu
+                
                 if( rotateCenter.x == undefined || rotateCenter.y == undefined ) {
                     rotateCenter.x = (offset.left) + ($(control).width() / 2);
                     rotateCenter.y = (offset.top) + ($(control).height() / 2);
                 }
 
-                //window.console.log(rotateCenter.x + "  " + rotateCenter.y);
                 var mouse_x = e.pageX;
                 var mouse_y = e.pageY;
                 var radians = Math.atan2(mouse_x - rotateCenter.x, mouse_y - rotateCenter.y);

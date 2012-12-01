@@ -125,9 +125,26 @@ h1 {
 }
 .controlPanel .zoomSlider {
     position: absolute;
-    height: 150px;
-    left: 70px;
-    top: 190px;
+    height: 148px;
+    width: 27px;
+    left: 61px;
+    top: 175px;
+}
+.controlPanel .zoomSlider .zoomIn {
+    position: absolute;
+    width: 27px;
+    height: 25px;
+    top: 0px;
+    background-image: url('../img/controlPanel/sliderPlus.png');
+    background-repeat: no-repeat;
+}
+.controlPanel .zoomSlider .zoomOut {
+    position: absolute;
+    width: 27px;
+    height: 25px;
+    bottom: 0px;
+    background-image: url('../img/controlPanel/sliderMinus.png');
+    background-repeat: no-repeat;
 }
 /*slider css - copy from jQuery UI*/
 .ui-slider { position: relative; text-align: left; }
@@ -140,8 +157,11 @@ h1 {
 .ui-slider-horizontal .ui-slider-range-min { left: 0; }
 .ui-slider-horizontal .ui-slider-range-max { right: 0; }
 
-.ui-slider-vertical { width: .8em; height: 100px; background-image: url('../img/controlPanel/sliderBack.png'); background-repeat: repeat-y;}
-.ui-slider-vertical .ui-slider-handle { left: -6px; margin-left: 0; margin-bottom: -.6em; background-image: url('../img/controlPanel/sliderPan.png'); background-repeat: no-repeat; background-position-y: 7px}
+.ui-slider-vertical { 
+    position: absolute;
+    top: 24px;
+    width: 27px; height: 100px; background-image: url('../img/controlPanel/sliderBack.png'); background-repeat: repeat-y;}
+.ui-slider-vertical .ui-slider-handle { left: 3px; margin-left: 0; margin-bottom: -.6em; background-image: url('../img/controlPanel/sliderPan.png'); background-repeat: no-repeat; background-position-y: 7px}
 .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
 .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
 .ui-slider-vertical .ui-slider-range-max { top: 0; }
