@@ -212,7 +212,7 @@ new zinjs.core.PluginPrototype(
                 _sliderContainer.appendChild( _buttonZoomOut );
                 
                 //stop zooming
-                $('*').mouseup(function(e) {
+                $('*').mouseup(function() {
                     allowZoom = false;
                 });
                 

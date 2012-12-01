@@ -1420,7 +1420,17 @@ zinjs.ZoomArea.prototype._writeToCanvases = function(properties)
             rotateZ: -properties.rotateZ + 'deg'
         }
     });
-
+    
+    //rotate with rotate control of controlPanel
+    var rotatePanel = new zinjs.Container($("#controlPanel .rotate"));
+    rotatePanel.addCss({
+        transitionDuration: '1s',
+        transform: {
+            rotateZ: -properties.rotateZ + 'deg'
+        }
+    });
+    
+    
     zinjs.info.canvasScale.addCss({
         transitionDuration: '0.8s',
         transitionDelay: '0.2s',
