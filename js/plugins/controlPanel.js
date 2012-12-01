@@ -282,14 +282,10 @@ new zinjs.core.PluginPrototype(
             }
 
             function homeButtonClick(e){
-                zinjs.info.canvasTranslate.addCss({
-                    transform: {
-                        translate: 0 + 'px,' + 0 + 'px'
-                    }
-                });
-                 zinjs.info.canvasTranslate.rotate( 0, 0, 0, 1);
-                 zinjs.info.zoomArea.zoomOut();
-                 e.preventDefault();
+                ek = $.Event('keydown');
+                ek.keyCode = 27;
+                $(document).trigger(ek);
+                e.preventDefault();
             }
             function presentationLeftClick(e){
                 ek = $.Event('keydown');
