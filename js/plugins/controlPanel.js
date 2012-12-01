@@ -40,7 +40,7 @@ new zinjs.core.PluginPrototype(
             if( properties['zoom'] == null) {
                 properties.zoom = 'enambled';
             }
-            properties.canvasMove = "50";
+            properties.canvasMove = "10";
 
             /*vypis vstupnich parametru pro control panel*/
             /*for (var type in properties) {
@@ -106,13 +106,13 @@ new zinjs.core.PluginPrototype(
                     var _arrowUp = document.createElement('a');
                     _arrowUp.className = 'up';
                     _arrowUp.setAttribute('href', '#');
-                    _arrowUp.onclick = arrowUpClick;
+                    _arrowUp.onmousedown = arrowUpClick;
                     _arrowContainer.appendChild(_arrowUp);
 
                     var _arrowDown = document.createElement('a');
                     _arrowDown.className = 'down';
                     _arrowDown.setAttribute('href', '#');
-                    _arrowDown.onclick = arrowDownClick;
+                    _arrowDown.onmousedown = arrowDownClick;
                     _arrowContainer.appendChild(_arrowDown);
                 }
 
@@ -120,13 +120,13 @@ new zinjs.core.PluginPrototype(
                     var _arrowLeft = document.createElement('a');
                     _arrowLeft.className = 'left';
                     _arrowLeft.setAttribute('href', '#');
-                    _arrowLeft.onclick = arrowLeftClick;
+                    _arrowLeft.onmousedown = arrowLeftClick;
                     _arrowContainer.appendChild(_arrowLeft);
 
                     var _arrowRight = document.createElement('a');
                     _arrowRight.className = 'right';
                     _arrowRight.setAttribute('href', '#');
-                    _arrowRight.onclick = arrowRightClick;
+                    _arrowRight.onmousedown = arrowRightClick;
                     _arrowContainer.appendChild(_arrowRight);
                 }
                 _divPanel.appendChild(_arrowContainer);
@@ -173,10 +173,10 @@ new zinjs.core.PluginPrototype(
                 });
                 _sliderContainer.appendChild(_slider);
                 
-                var allowZoom = false;
+                var allowMove = false;
                 var zoomValue = 1;
                 function zoomuj( direction ){
-                    if(allowZoom ) {
+                    if(allowMove ) {
                         if(direction == 'IN') {
                             zoomValue++;
                         }
@@ -191,7 +191,7 @@ new zinjs.core.PluginPrototype(
                     }
                 }
                 function startZoom (e){
-                    allowZoom = true;
+                    allowMove = true;
                     e.preventDefault();
                     var direction = 'OUT';
                     if(e.target.className == 'zoomIn')
@@ -211,10 +211,7 @@ new zinjs.core.PluginPrototype(
                 _buttonZoomOut.setAttribute('href', '#');
                 _sliderContainer.appendChild( _buttonZoomOut );
                 
-                //stop zooming
-                $('*').mouseup(function() {
-                    allowZoom = false;
-                });
+                
                 
                 _divPanel.appendChild(_sliderContainer);
                 
@@ -224,61 +221,68 @@ new zinjs.core.PluginPrototype(
                     //console.log("slided " + value);
                 });
             }
-
+            
+            //stop mooving
+            $('*').mouseup(function() {
+                allowMove = false;
+            });
+                
+            function moveCanvas(direction){
+                var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
+                var transArr = trans.split(',');
+                var xx = parseInt(transArr[0], 10);
+                var yy = parseInt(transArr[1], 10);
+                var moveX = 0,moveY = 0;
+                
+                switch(direction) {
+                    case "UP":
+                        moveY = parseInt(properties.canvasMove);
+                        break;
+                    case "RIGHT":
+                        moveX =  parseInt(properties.canvasMove) * (-1);
+                        break;
+                    case "LEFT":
+                        moveX = parseInt(properties.canvasMove);
+                        break;
+                    case "DOWN":
+                        moveY = parseInt(properties.canvasMove) * (-1);
+                        break;    
+                }
+                if(allowMove) {
+                    zinjs.info.canvasTranslate.addCss({
+                        transform: {
+                            translate: (xx + moveX) + 'px,' + (yy + moveY) + 'px'
+                        }
+                    });
+                    setTimeout(function() {
+                        moveCanvas(direction);
+                    },25);
+                }
+                
+                
+            }
             /*
              * Conrol panel events
              **/
             function arrowUpClick(e){
-                var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
-                var transArr = trans.split(',');
-                var xx = parseInt(transArr[0], 10);
-                var yy = parseInt(transArr[1], 10);
-
-                zinjs.info.canvasTranslate.addCss({
-                    transform: {
-                        translate: (xx) + 'px,' + (yy + parseInt(properties.canvasMove)) +'px'
-                    }
-                });
-                 e.preventDefault();
+                allowMove = true;
+                moveCanvas("UP");
+                e.preventDefault();
             }
             function arrowDownClick(e){
-                var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
-                var transArr = trans.split(',');
-                var xx = parseInt(transArr[0], 10);
-                var yy = parseInt(transArr[1], 10);
-
-                zinjs.info.canvasTranslate.addCss({
-                    transform: {
-                        translate: (xx) + 'px,' + (yy - properties.canvasMove) +'px'
-                    }
-                });
-                 e.preventDefault();
+                allowMove = true;
+                moveCanvas("DOWN");
+                e.preventDefault();
             }
             function arrowLeftClick(e){
-                var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
-                var transArr = trans.split(',');
-                var xx = parseInt(transArr[0], 10);
-                var yy = parseInt(transArr[1], 10);
-
-                zinjs.info.canvasTranslate.addCss({
-                    transform: {
-                        translate: (xx +  parseInt(properties.canvasMove)) + 'px,' + yy +'px'
-                    }
-                });
-                 e.preventDefault();
+                allowMove = true;
+                moveCanvas("LEFT");
+                e.preventDefault();
             }
             function arrowRightClick(e){
-                var trans = zinjs.info.canvasTranslate._styles._css['transform']['translate'];
-                var transArr = trans.split(',');
-                var xx = parseInt(transArr[0], 10);
-                var yy = parseInt(transArr[1], 10);
-
-                zinjs.info.canvasTranslate.addCss({
-                    transform: {
-                        translate: (xx - parseInt(properties.canvasMove)) + 'px,' + (yy ) +'px'
-                    }
-                });
-                 e.preventDefault();
+                allowMove = true;
+                moveCanvas("RIGHT");
+                e.preventDefault();
             }
 
             function homeButtonClick(e){
