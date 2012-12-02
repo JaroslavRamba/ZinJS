@@ -326,8 +326,14 @@ new zinjs.core.PluginPrototype(
                 var radians = Math.atan2(mouse_x - rotateCenter.x, mouse_y - rotateCenter.y);
                 var degree = (radians * (180 / Math.PI) * -1) + 180 ;
                 var rotatePanel = new zinjs.Container(control);
-                rotatePanel.rotate( degree, 0, 0, 1);
-
+                //rotatePanel.rotate( degree, 0, 0, 1);
+                rotatePanel.addCss({
+                    transitionDuration: '0s',
+                    transitionDelay: '0s',
+                    transform: {
+                        rotateZ: degree + 'deg'
+                    }
+                });
                 // zinjs.info.canvasTranslate.rotate( degree, 0, 0, 1);
                 zinjs.info.canvasTranslate.addCss({
                     transitionDuration: '0s',
