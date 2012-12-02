@@ -176,6 +176,7 @@ new zinjs.core.PluginPrototype(
                 min: 1,
                 max: 60,
                 value: 10,
+                animate: "fast",
                 slide: function( event, ui ) {}
             });
             _sliderContainer.appendChild(_slider);
