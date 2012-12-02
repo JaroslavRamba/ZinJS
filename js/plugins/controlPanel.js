@@ -54,6 +54,7 @@ new zinjs.core.PluginPrototype(
         /*
              * Render control panel to html dom.
              **/
+        
         var body = document.getElementsByTagName("body")[0];
         var _divPanel = body.appendChild(document.createElement("div"));
         _divPanel.setAttribute('id',controlPanelId);
