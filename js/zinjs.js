@@ -1478,6 +1478,10 @@ zinjs.ZoomArea.prototype.zoomIn = function()
             rotateY: rY,
             rotateZ: rZ
         });
+        //set controlPanel zoom control pan
+        console.log("try tu set slider value to: ", scale*10)
+        $("div.ui-slider").slider( "option","value",scale*10);
+        //$("div.ui-slider").trigger("slide");
         this._active = true;
         zinjs.info.zoomArea = this;
     }
