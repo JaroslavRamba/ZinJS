@@ -136,7 +136,9 @@
                     }
                 });
 
-                zoomArea6.wheel(function() {
+                var _globalZoom = new zinjs.Container('#zinjsScale');
+                _globalZoom.wheel(function() {
+                    zijs.
                     zinjs.info.canvasScale.addCss({
                         transform: {
                             perspective: zinjs.info.config.perspective/0.8,
